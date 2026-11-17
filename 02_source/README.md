@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Credit Scoring Assistant (Demo)
 
-## Getting Started
+Aplikasi web demo untuk credit analyst BNPL: queue aplikasi, ekstraksi dokumen simulasi, skor kredit, guardrail, dan keputusan analyst. Seluruh data sintetis.
 
-First, run the development server:
+Dokumen sumber ada di `../01_documents/`. Kontrak data runtime ada di `schema.md`.
+
+## Prasyarat
+
+- Node.js 20 atau lebih baru (lingkungan uji: Node 24).
+- npm.
+
+## Menjalankan
 
 ```bash
+cd 02_source
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Perintah
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Perintah | Kegunaan |
+|---|---|
+| `npm run dev` | Jalankan server lokal. |
+| `npm run build` | Build server Next.js. |
+| `npm run start` | Jalankan hasil build. |
+| `npm run verify` | Verifikasi skor lima profil dan guardrail C-05. |
+| `npm run typecheck` | Typecheck TypeScript tanpa emit. |
+| `npm run lint` | ESLint. |
 
-## Learn More
+## Data demo
 
-To learn more about Next.js, take a look at the following resources:
+- Seed lima profil ada di `lib/seed.ts`: C-01 sampai C-05.
+- Penyimpanan runtime: `data/db.json`, dibuat otomatis saat pertama diakses.
+- File `data/db.json` tidak di-commit. Hapus file tersebut untuk kembali ke seed.
+- Skor wajib: `1000`, `745`, `615`, `525`, `215` (grade A sampai E).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Struktur modul
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Path | Isi |
+|---|---|
+| `lib/types.ts` | Tipe domain sesuai TRD §6 dan §8. |
+| `lib/scoring.ts` | Scorecard aditif, guardrail, faktor, narasi. Murni tanpa I/O. |
+| `lib/extraction.ts` | Ekstraksi simulasi, nilai efektif, `ScoreInput`. |
+| `lib/seed.ts` | Lima profil dan lima aplikasi awal. |
+| `lib/validation.ts` | Validasi form, keputusan, dan upload. |
+| `lib/format.ts` | Format Rupiah, persen, skor, dan waktu. |
+| `lib/server/store.ts` | Baca/tulis JSON server dengan tulis atomik dan antrean mutasi. |
+| `scripts/verify-scores.ts` | Pemeriksaan skor dan invariant seed. |
 
-## Deploy on Vercel
+## Catatan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Backend memakai route handler Next.js dan file JSON. Tidak ada database eksternal, autentikasi, atau layanan eksternal.
+- Scoring deterministik: input sama menghasilkan skor sama.
+- Halaman UI, API, dan PWA dibangun pada sesi berikutnya.

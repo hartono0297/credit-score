@@ -20,6 +20,10 @@
 # production
 /build
 
+# runtime data (seed otomatis)
+/data/db.json
+/data/*.tmp
+
 # misc
 .DS_Store
 *.pem
