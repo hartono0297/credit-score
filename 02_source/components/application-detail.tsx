@@ -229,8 +229,9 @@ export function ApplicationDetail() {
               <div className="mt-4 border-t border-line pt-4">
                 <ScoreBadge score={score.score} grade={score.grade} size="lg" />
                 <p className="mt-3 text-sm leading-relaxed text-ink">
-                  <span className="font-semibold">Rekomendasi: </span>
-                  {score.recommendation}
+                  {score.recommendation.startsWith("Rekomendasi")
+                    ? score.recommendation
+                    : `Rekomendasi: ${score.recommendation}`}
                 </p>
                 <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-muted">
                   {score.narrative}

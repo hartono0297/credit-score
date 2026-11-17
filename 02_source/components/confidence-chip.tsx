@@ -1,5 +1,6 @@
-import { LOW_CONFIDENCE_THRESHOLD } from "@/lib/extraction";
 import { formatDecimal } from "@/lib/format";
+
+const LOW_CONFIDENCE_THRESHOLD = 0.8;
 
 export function ConfidenceChip({ confidence }: { confidence: number }) {
   const low = confidence < LOW_CONFIDENCE_THRESHOLD;

@@ -505,8 +505,8 @@ export default function NewApplicationPage() {
             </div>
           )}
 
-          <div aria-live="polite" className="mt-2">
-            {extracting ? <p className="text-sm text-muted">Mengekstrak dokumen...</p> : null}
+          <div aria-live="polite" className="sr-only">
+            {extracting ? <p>Mengekstrak dokumen...</p> : null}
           </div>
         </section>
 
