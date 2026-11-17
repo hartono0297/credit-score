@@ -1,0 +1,14 @@
+# Dependencies
+02_source/node_modules/
+
+# Next.js
+02_source/.next/
+02_source/out/
+
+# Runtime data
+02_source/data/db.json
+
+# Logs and caches
+*.log
+*.tsbuildinfo
+.DS_Store
