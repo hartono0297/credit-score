@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@playwright/test": ["../../02_source/node_modules/@playwright/test"]
+    }
+  }
+}

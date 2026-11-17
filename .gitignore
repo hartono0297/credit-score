@@ -8,6 +8,10 @@
 # Runtime data
 02_source/data/db.json
 
+# QA artifacts
+03_qa/automated/test-results/
+03_qa/automated/playwright-report/
+
 # Logs and caches
 *.log
 *.tsbuildinfo

@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "verify": "tsx scripts/verify-scores.ts"
+    "verify": "tsx scripts/verify-scores.ts",
+    "test:unit": "tsx --test ../03_qa/automated/unit/scoring.test.ts ../03_qa/automated/unit/extraction.test.ts",
+    "test:e2e": "playwright test --config ../03_qa/automated/playwright.config.ts"
   },
   "dependencies": {
     "next": "16.4.6",
@@ -16,6 +18,7 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
