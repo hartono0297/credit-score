@@ -6,7 +6,7 @@ Dokumen sumber ada di `../01_documents/`. Kontrak data runtime ada di `schema.md
 
 ## Prasyarat
 
-- Node.js 20 atau lebih baru (lingkungan uji: Node 24).
+- Node.js 20 atau lebih baru (diuji pada Node 22.14.0).
 - npm.
 
 ## Menjalankan
