@@ -1,6 +1,7 @@
 // Hanya untuk server: memakai fs, jangan diimpor komponen client.
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import { createSeedState } from "../seed";
 import type { StoreState } from "../types";
 
@@ -29,12 +30,32 @@ function isStoreState(value: unknown): value is StoreState {
   );
 }
 
+const RENAME_RETRY_DELAYS_MS = [20, 40, 80, 160];
+
+function isTransientRenameError(error: unknown): boolean {
+  const code = (error as NodeJS.ErrnoException).code;
+  return code === "EPERM" || code === "EACCES" || code === "EBUSY";
+}
+
 async function writeState(state: StoreState): Promise<void> {
   await mkdir(DB_DIR, { recursive: true });
   tempCounter += 1;
   const tempPath = `${DB_PATH}.${process.pid}.${tempCounter}.tmp`;
   await writeFile(tempPath, JSON.stringify(state, null, 2), "utf8");
-  await rename(tempPath, DB_PATH);
+
+  // Windows dapat mengunci file tujuan sesaat saat replace, jadi rename diulang.
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await rename(tempPath, DB_PATH);
+      return;
+    } catch (error) {
+      if (!isTransientRenameError(error) || attempt >= RENAME_RETRY_DELAYS_MS.length) {
+        await unlink(tempPath).catch(() => undefined);
+        throw error;
+      }
+      await delay(RENAME_RETRY_DELAYS_MS[attempt]);
+    }
+  }
 }
 
 async function loadState(): Promise<StoreState> {

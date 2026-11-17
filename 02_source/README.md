@@ -27,6 +27,8 @@ Buka `http://localhost:3000`.
 | `npm run build` | Build server Next.js. |
 | `npm run start` | Jalankan hasil build. |
 | `npm run verify` | Verifikasi skor lima profil dan guardrail C-05. |
+| `npm run test:unit` | Unit test scoring dan ekstraksi lewat Node test runner. |
+| `npm run test:e2e` | E2E Playwright pada port 3108 memakai Chrome terpasang. |
 | `npm run typecheck` | Typecheck TypeScript tanpa emit. |
 | `npm run lint` | ESLint. |
 
@@ -54,4 +56,4 @@ Buka `http://localhost:3000`.
 
 - Backend memakai route handler Next.js dan file JSON. Tidak ada database eksternal, autentikasi, atau layanan eksternal.
 - Scoring deterministik: input sama menghasilkan skor sama.
-- Halaman UI, API, dan PWA dibangun pada sesi berikutnya.
+- Skenario uji dan hasil QA ada di `../03_qa/`. Presentasi demo ada di `../04_presentation/presentation.pptx`.

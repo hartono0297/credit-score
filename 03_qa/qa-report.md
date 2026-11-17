@@ -6,7 +6,7 @@
 | Tanggal | 18 November 2026 |
 | Branch | `plan/04-qa` |
 | Lingkup | Function, performance, penetration terbatas, anti-slop |
-| Status akhir | Lulus dengan 3 temuan terbuka dan 4 batasan pengujian |
+| Status akhir | Lulus dengan 2 temuan terbuka dan 4 batasan pengujian |
 
 ---
 
@@ -114,11 +114,11 @@ File: `03_qa/automated/e2e/demo-flow.spec.ts`.
 |---|---|---|---|---|
 | QD-01 | Tiga locator E2E ambigu: label Reason code juga cocok dengan aria-label tombol mobile, teks rekomendasi muncul dua kali, dan filter section mencakup parent | Low | Selesai | Locator dipertegas di test. Tidak ada perubahan aplikasi |
 | QD-02 | Artefak Playwright awalnya ditulis ke `02_source/test-results` | Low | Selesai | `outputDir` dikunci ke `03_qa/automated/test-results`; entri gitignore ditambah |
-| QD-03 | Satu run penuh mendapat 500 saat menyimpan keputusan C-05 tanpa catatan | Medium | Terbuka | Tidak tereproduksi pada test terisolasi maupun run penuh berikutnya. Sisa file `db.json.*.tmp` menunjukkan kegagalan rename sementara di Windows. Tidak ada perubahan aplikasi |
+| QD-03 | Satu run penuh mendapat 500 saat menyimpan keputusan C-05 tanpa catatan | Medium | Selesai | Reproduksi ulang pada integrasi: sisa `db.json.*.tmp` menandakan rename sementara gagal di Windows. Store sekarang mengulang rename hingga empat kali dengan jeda 20 sampai 160 ms dan menghapus temp file saat gagal permanen. Dua run penuh E2E lulus setelah perbaikan |
 | QD-04 | Teks Approved dan chip confidence memakai `#157f3d` di atas `#e7f2ea`, rasio kontras 4,42:1 | Low | Terbuka | Di bawah ambang WCAG AA 4,5:1 untuk teks 12px. Nilai ini ditetapkan DESIGN.md; perubahan token menunggu keputusan desain |
 | QD-05 | `npm audit` melaporkan 14 high pada dependency dev transitif | Low | Diterima | Berasal dari toolchain ESLint dan `picomatch`. `npm audit --omit=dev` bersih. Tidak ada paparan runtime |
 
-Catatan QD-03: handler menangkap kegagalan tulis dan mengembalikan 500. Percobaan ulang oleh pengguna berhasil. Gejala tidak muncul lagi pada dua run penuh dan satu run terisolasi setelahnya.
+Catatan QD-03: gejala muncul lagi pada satu run integrasi setelah merge, dengan `db.json.21124.23.tmp` tertinggal. Perbaikan ada di `02_source/lib/server/store.ts`: rename diulang pada kode EPERM, EACCES, atau EBUSY, dan temp file dibersihkan bila upaya terakhir gagal. Diverifikasi dengan dua run E2E penuh tanpa kegagalan.
 
 ---
 
@@ -175,7 +175,7 @@ Bukti visual: tangkapan layar aktual pada 1440px dan 390px untuk queue dan detai
 | Kriteria | Status |
 |---|---|
 | Semua FT prioritas Must lulus | Lulus, dengan FT-20, FT-23, dan FT-24 tidak diuji dan dicatat |
-| Tidak ada defect Critical atau High terbuka | Lulus. QD-03 berstatus Medium dan terpantau |
+| Tidak ada defect Critical atau High terbuka | Lulus. QD-03 selesai pada integrasi; tidak ada defect Critical atau High terbuka |
 | Unit, verify, dan E2E lulus | Lulus |
 | Performance terukur atau ditandai | Lulus, PT-05 tidak diukur |
 | Checklist keamanan terisi | Lulus |
@@ -186,6 +186,5 @@ Bukti visual: tangkapan layar aktual pada 1440px dan 390px untuk queue dan detai
 ## 11. Tindak Lanjut
 
 1. Putuskan perubahan token hijau agar teks Approved dan chip confidence mencapai 4,5:1, lalu perbarui DESIGN.md.
-2. Tambahkan retry atau penanganan rename yang lebih tahan pada penyimpanan file JSON jika QD-03 muncul lagi.
-3. Jalankan uji keyboard, error state server mati, dan install PWA pada build produksi sebelum demo eksternal.
-4. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
+2. Jalankan uji keyboard, error state server mati, dan install PWA pada build produksi sebelum demo eksternal.
+3. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
