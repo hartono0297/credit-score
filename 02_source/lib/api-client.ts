@@ -1,4 +1,4 @@
-import type { Application, Profile } from "./types";
+import type { Application, DocumentType, Profile } from "./types";
 
 export type CreateApplicationInput = {
   profileId: string;
@@ -6,6 +6,7 @@ export type CreateApplicationInput = {
   tenor: number;
   dp: number;
   purpose?: string;
+  documents?: { type: DocumentType; fileName: string }[];
 };
 
 export type ExtractionUpdate = {

@@ -64,6 +64,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       const application = state.applications.find((item) => item.id === id);
       if (!application) return { kind: "not_found" as const };
       if (!application.extraction) return { kind: "no_extraction" as const };
+      if (application.status === "Approved" || application.status === "Rejected") {
+        return { kind: "final" as const };
+      }
 
       const profile = demoProfiles.find((item) => item.id === application.profileId);
       if (!profile) return { kind: "profile_missing" as const };
@@ -107,6 +110,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     if (result.kind === "not_found") return jsonError(404, "Aplikasi tidak ditemukan.");
     if (result.kind === "no_extraction") {
       return jsonError(409, "Ekstraksi belum tersedia untuk aplikasi ini.");
+    }
+    if (result.kind === "final") {
+      return jsonError(409, "Koreksi ekstraksi tidak dapat dilakukan setelah keputusan final.");
     }
     if (result.kind === "profile_missing") {
       return jsonError(500, "Profil demo tidak ditemukan.");

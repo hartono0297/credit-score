@@ -1,10 +1,16 @@
 import { demoProfiles } from "@/lib/seed";
 import { jsonError, readJsonBody } from "@/lib/server/http";
 import { readState, updateState } from "@/lib/server/store";
-import type { Application } from "@/lib/types";
+import type { Application, DocumentType } from "@/lib/types";
 import { validateNewApplication } from "@/lib/validation";
 
 const MAX_PURPOSE_LENGTH = 120;
+const MAX_FILE_NAME_LENGTH = 160;
+const DOCUMENT_TYPES: DocumentType[] = ["KTP", "SLIP_GAJI", "MUTASI"];
+
+function isDocumentType(value: unknown): value is DocumentType {
+  return typeof value === "string" && DOCUMENT_TYPES.includes(value as DocumentType);
+}
 
 export async function GET() {
   try {
@@ -40,6 +46,38 @@ export async function POST(request: Request) {
     }
   }
 
+  const documents: Application["documents"] = [];
+  if (body.documents !== undefined) {
+    if (!Array.isArray(body.documents)) {
+      errors.documents = "Dokumen harus berupa daftar.";
+    } else {
+      for (const item of body.documents) {
+        if (typeof item !== "object" || item === null || Array.isArray(item)) {
+          errors.documents = "Format dokumen tidak valid.";
+          break;
+        }
+        const record = item as Record<string, unknown>;
+        if (!isDocumentType(record.type)) {
+          errors.documents = "Jenis dokumen tidak dikenal.";
+          break;
+        }
+        const fileName = typeof record.fileName === "string" ? record.fileName.trim() : "";
+        if (!fileName || fileName.length > MAX_FILE_NAME_LENGTH) {
+          errors.documents = "Nama file tidak valid.";
+          break;
+        }
+        if (documents.some((document) => document.type === record.type)) {
+          errors.documents = "Jenis dokumen tidak boleh duplikat.";
+          break;
+        }
+        documents.push({ type: record.type, fileName });
+      }
+      if (documents.length > DOCUMENT_TYPES.length) {
+        errors.documents = "Maksimal tiga dokumen.";
+      }
+    }
+  }
+
   const validation = validateNewApplication(
     { profileId, plafon, tenor, dp },
     demoProfiles.map((profile) => profile.id),
@@ -66,7 +104,7 @@ export async function POST(request: Request) {
         dp,
         purpose,
         status: "Draft",
-        documents: [],
+        documents,
         log: [],
       };
       state.applications.push(application);

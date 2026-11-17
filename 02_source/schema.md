@@ -8,6 +8,7 @@ Kontrak JSON aplikasi demo. Sumber: TRD §6, §7, §9. Tipe TypeScript ada di `l
 - Dibuat otomatis dari `createSeedState()` bila file tidak ada, kosong, atau rusak.
 - Tulis atomik: file sementara lalu `rename`. Mutasi diantrekan in-process agar penulisan tidak bersamaan.
 - File runtime, tidak di-commit (lihat `.gitignore`).
+- `POST /api/applications` menerima `documents` opsional: maksimal tiga item `{ type, fileName }` dengan tipe `KTP`, `SLIP_GAJI`, atau `MUTASI`. Hanya nama file yang disimpan, tanpa biner.
 
 ## StoreState
 
@@ -101,3 +102,5 @@ type ScoreInput = {
 7. `520 + sum(allFactors.points)` sama dengan skor sebelum clamp.
 8. Tidak ada biner upload di penyimpanan; hanya `fileName`.
 9. Modul `lib/server/store.ts` hanya dipakai server.
+10. Keputusan dapat diubah; setiap keputusan baru menambah entri log.
+11. Koreksi extraction ditolak setelah status `Approved` atau `Rejected`.

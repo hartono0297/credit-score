@@ -29,7 +29,7 @@ export async function POST(request: Request, context: RouteContext) {
       const application = state.applications.find((item) => item.id === id);
       if (!application) return { kind: "not_found" as const };
 
-      if (application.status !== "Scored" && application.status !== "Manual Review") {
+      if (!application.score || application.status === "Draft") {
         return { kind: "conflict" as const };
       }
 
@@ -60,7 +60,7 @@ export async function POST(request: Request, context: RouteContext) {
     if (result.kind === "conflict") {
       return jsonError(
         409,
-        "Keputusan hanya dapat disimpan untuk aplikasi berstatus Scored atau Manual Review.",
+        "Keputusan hanya dapat disimpan setelah ekstraksi dan skor tersedia.",
       );
     }
     if (result.kind === "invalid") {
