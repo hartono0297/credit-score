@@ -175,7 +175,7 @@ const seedConfigs: SeedConfig[] = [
         applicationId: "APP-001",
         decision: "Approved",
         reasonCode: "OTHER",
-        notes: "Seed demo",
+        notes: "SLIK lancar dan DTI di bawah 20%. Disetujui sesuai pengajuan.",
         activeGuardrails: [],
       },
     ],

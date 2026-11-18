@@ -61,7 +61,7 @@ Jika logo dan nama produk diganti, tampilan tetap terbaca sebagai meja kerja kre
 --accent-ink: #ffffff;
 --accent-soft: #e3efed;
 
---grade-a: #157f3d;
+--grade-a: #13743a;
 --grade-b: #3f7d20;
 --grade-c: #9a6a00;
 --grade-d: #b4540a;
@@ -201,6 +201,7 @@ Tidak memakai uppercase dengan letter-spacing lebar, font monospace dekoratif, a
 - Dikelompokkan per dokumen.
 - Setiap baris: label, nilai, chip confidence, tombol Ubah.
 - Mode edit menampilkan input dengan label eksplisit dan tombol Simpan.
+- Input nominal (plafon, DP, koreksi) memakai prefiks `Rp`, angka tabular, dan titik ribuan otomatis saat diketik.
 - Field yang dikoreksi menampilkan label `Hasil koreksi analyst`.
 
 ### 7.10 SLIK table

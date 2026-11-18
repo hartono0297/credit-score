@@ -185,6 +185,17 @@ test("guardrail C-05 aktif dan GR-03 dievaluasi di scoring", () => {
   assert.deepEqual(scoreApplication(BASE_INPUT).guardrails, []);
 });
 
+test("narasi memakai detail faktor yang terbaca wajar", () => {
+  assert.equal(
+    scoreForProfileId("C-05").narrative,
+    "Skor 215 (Grade E). Tidak pernah telat dalam 12 bulan menaikkan skor (+60), namun kolektibilitas terburuk 3 (kurang lancar) menurunkan skor (-200). Rekomendasi reject.",
+  );
+  assert.equal(
+    scoreForProfileId("C-03").narrative,
+    "Skor 615 (Grade C). Kolektibilitas terburuk 1 (lancar) menaikkan skor (+100), namun selisih slip-mutasi 28,0% menurunkan skor (-45). Rekomendasi: Manual review, plafon maks 50% pengajuan.",
+  );
+});
+
 test("ambang poin DTI sesuai PRD 12.2", () => {
   const dtiPoints = (existingInstallment: number) =>
     pointsFor({ plafon: 12_000_000, tenor: 12, existingInstallment }, "dti");

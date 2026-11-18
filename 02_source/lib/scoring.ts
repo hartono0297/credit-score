@@ -75,8 +75,22 @@ function compareByWeight(a: Factor, b: Factor): number {
   return DIRECTION_ORDER[a.direction] - DIRECTION_ORDER[b.direction];
 }
 
-function lowerFirst(text: string): string {
-  return text.charAt(0).toLowerCase() + text.slice(1);
+const KOLEKTIBILITAS_LABELS: Record<number, string> = {
+  1: "lancar",
+  2: "dalam perhatian khusus",
+  3: "kurang lancar",
+  4: "diragukan",
+  5: "macet",
+};
+
+function upperFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function lateDetail(lateCount: number, has90Plus: boolean): string {
+  if (has90Plus) return "ada tunggakan 90+ hari dalam 12 bulan";
+  if (lateCount === 0) return "tidak pernah telat dalam 12 bulan";
+  return `telat ${lateCount} kali dalam 12 bulan`;
 }
 
 function factor(key: string, label: string, points: number, detail: string): Factor {
@@ -112,15 +126,13 @@ export function scoreApplication(input: ScoreInput): ScoreResult {
       "kolektibilitas",
       "Kolektibilitas SLIK",
       pointsForKolektibilitas(input.worstKolektibilitas),
-      `kolektibilitas terburuk ${input.worstKolektibilitas}`,
+      `kolektibilitas terburuk ${input.worstKolektibilitas} (${KOLEKTIBILITAS_LABELS[input.worstKolektibilitas]})`,
     ),
     factor(
       "late",
       "Keterlambatan 12 bulan",
       pointsForLate(input.lateCount, input.has90Plus),
-      input.has90Plus
-        ? "ada tunggakan 90+ hari dalam 12 bulan"
-        : `telat ${input.lateCount} kali dalam 12 bulan`,
+      lateDetail(input.lateCount, input.has90Plus),
     ),
   ];
 
@@ -153,12 +165,12 @@ export function scoreApplication(input: ScoreInput): ScoreResult {
   const sentences = [`Skor ${score} (Grade ${grade}).`];
   if (topPositive && topNegative) {
     sentences.push(
-      `${topPositive.label} menaikkan skor (+${topPositive.points}), namun ${lowerFirst(topNegative.label)} menurunkan skor (${topNegative.points}).`,
+      `${upperFirst(topPositive.detail)} menaikkan skor (+${topPositive.points}), namun ${topNegative.detail} menurunkan skor (${topNegative.points}).`,
     );
   } else if (topPositive) {
-    sentences.push(`${topPositive.label} menaikkan skor (+${topPositive.points}).`);
+    sentences.push(`${upperFirst(topPositive.detail)} menaikkan skor (+${topPositive.points}).`);
   } else if (topNegative) {
-    sentences.push(`${topNegative.label} menurunkan skor (${topNegative.points}).`);
+    sentences.push(`${upperFirst(topNegative.detail)} menurunkan skor (${topNegative.points}).`);
   }
   sentences.push(
     recommendation.startsWith("Rekomendasi")

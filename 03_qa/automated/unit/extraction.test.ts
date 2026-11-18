@@ -6,6 +6,7 @@ import {
   effectiveValues,
   extractFromProfile,
 } from "../../../02_source/lib/extraction";
+import { formatAmountInput, parseAmount } from "../../../02_source/lib/format";
 import { demoProfiles } from "../../../02_source/lib/seed";
 import type { ExtractedField, Extraction, Profile } from "../../../02_source/lib/types";
 
@@ -205,4 +206,14 @@ test("buildScoreInput tanpa ekstraksi memakai nilai profil", () => {
     input.salaryGap,
     Math.abs(profile.thp - profile.monthlyInflow) / profile.thp,
   );
+});
+
+test("input nominal Rupiah diformat dan diparse kembali", () => {
+  assert.equal(formatAmountInput("2000000"), "2.000.000");
+  assert.equal(formatAmountInput("Rp 2.000.000"), "2.000.000");
+  assert.equal(formatAmountInput("0050000"), "50.000");
+  assert.equal(formatAmountInput("abc"), "");
+  assert.equal(parseAmount("2.000.000"), 2_000_000);
+  assert.equal(parseAmount("Rp 15.000.000"), 15_000_000);
+  assert.ok(Number.isNaN(parseAmount("")));
 });

@@ -196,9 +196,9 @@ Form satu halaman:
 |---|---|---|
 | Profil Demo | Select C-01…C-05 | Wajib; menampilkan deskripsi singkat kasus |
 | Produk | Select (BNPL) | Wajib |
-| Plafon | Number (Rp) | 5–50 juta |
+| Plafon | Nominal Rp, titik ribuan otomatis saat diketik | 5–50 juta |
 | Tenor | Select 3/6/12/18/24 bulan | Wajib |
-| DP | Number (Rp) | 0 s/d 50% plafon |
+| DP | Nominal Rp, titik ribuan otomatis saat diketik | 0 s/d 50% plafon |
 | Tujuan | Text | Opsional |
 
 **Upload:** tiga slot — KTP, slip gaji, mutasi rekening. Menerima JPG/PNG/PDF, maks 10 MB. Tombol **Ekstrak Dokumen** aktif jika ketiganya terisi.

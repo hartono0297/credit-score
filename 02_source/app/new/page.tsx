@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ApiError, createApplication, extractApplication, listProfiles, updateExtraction } from "@/lib/api-client";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, parseAmount } from "@/lib/format";
 import { ExtractionList } from "@/components/extraction-list";
 import type { CorrectableField } from "@/components/extraction-list";
+import { RupiahInput } from "@/components/rupiah-input";
 import { UploadSlot } from "@/components/upload-slot";
 import type { Application, DocumentType, Profile } from "@/lib/types";
 import { MAX_DP_RATIO, TENORS, validateNewApplication } from "@/lib/validation";
@@ -18,11 +19,6 @@ const DOCUMENTS: { type: DocumentType; label: string }[] = [
 ];
 
 const FIELD_ORDER = ["profileId", "plafon", "tenor", "dp", "purpose", "documents"] as const;
-
-function parseAmount(raw: string): number {
-  const cleaned = raw.trim().replace(/^rp\s*/i, "").replace(/[.\s]/g, "");
-  return /^\d+$/.test(cleaned) ? Number(cleaned) : Number.NaN;
-}
 
 function describedBy(...ids: (string | undefined)[]): string | undefined {
   const value = ids.filter(Boolean).join(" ");
@@ -312,25 +308,22 @@ export default function NewApplicationPage() {
               <label htmlFor="plafon" className="block text-sm font-semibold text-ink">
                 Plafon (Rupiah)
               </label>
-              <input
+              <RupiahInput
                 id="plafon"
                 ref={plafonRef}
-                type="text"
-                inputMode="numeric"
                 value={plafonText}
-                onChange={(event) => {
-                  setPlafonText(event.target.value);
+                onValueChange={(value) => {
+                  setPlafonText(value);
                   setErrors((current) => ({ ...current, plafon: "" }));
                 }}
                 disabled={locked}
-                placeholder="15000000"
+                placeholder="15.000.000"
                 required
                 aria-invalid={errors.plafon ? true : undefined}
                 aria-describedby={describedBy("plafon-hint", errors.plafon ? "plafon-error" : undefined)}
-                className="mt-1 block min-h-11 w-full rounded-control border border-line-strong bg-surface px-3 text-sm text-ink disabled:bg-surface-muted disabled:text-muted"
               />
               <p id="plafon-hint" className="mt-1 text-xs text-muted">
-                Rp 5.000.000 sampai Rp 50.000.000. Contoh: 15000000 atau Rp 15.000.000.
+                Rp 5.000.000 sampai Rp 50.000.000.
               </p>
               {errors.plafon ? (
                 <p id="plafon-error" className="mt-1 text-sm font-medium text-danger-ink">
@@ -375,14 +368,12 @@ export default function NewApplicationPage() {
               <label htmlFor="dp" className="block text-sm font-semibold text-ink">
                 DP (Rupiah)
               </label>
-              <input
+              <RupiahInput
                 id="dp"
                 ref={dpRef}
-                type="text"
-                inputMode="numeric"
                 value={dpText}
-                onChange={(event) => {
-                  setDpText(event.target.value);
+                onValueChange={(value) => {
+                  setDpText(value);
                   setErrors((current) => ({ ...current, dp: "" }));
                 }}
                 disabled={locked}
@@ -390,7 +381,6 @@ export default function NewApplicationPage() {
                 required
                 aria-invalid={errors.dp ? true : undefined}
                 aria-describedby={describedBy("dp-hint", errors.dp ? "dp-error" : undefined)}
-                className="mt-1 block min-h-11 w-full rounded-control border border-line-strong bg-surface px-3 text-sm text-ink disabled:bg-surface-muted disabled:text-muted"
               />
               <p id="dp-hint" className="mt-1 text-xs text-muted">
                 {dpLimit !== null

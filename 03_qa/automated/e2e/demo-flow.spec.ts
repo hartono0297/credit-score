@@ -233,8 +233,10 @@ test("SC-03 koreksi THP pada alur aplikasi baru dan skor dihitung ulang", async 
   await expect(page.getByText(/PT Sinar Digital/)).toBeVisible();
 
   await page.getByLabel("Plafon (Rupiah)").fill("15000000");
+  await expect(page.getByLabel("Plafon (Rupiah)")).toHaveValue("15.000.000");
   await page.getByLabel("Tenor").selectOption("12");
   await page.getByLabel("DP (Rupiah)").fill("1500000");
+  await expect(page.getByLabel("DP (Rupiah)")).toHaveValue("1.500.000");
   await page.getByLabel("Tujuan (opsional)").fill("Renovasi rumah");
 
   const extractButton = page.getByRole("button", { name: "Ekstrak Dokumen" });
@@ -283,6 +285,7 @@ test("SC-03 koreksi THP pada alur aplikasi baru dan skor dihitung ulang", async 
   const slipSection = page.getByRole("region", { name: "Slip gaji", exact: true });
   await slipSection.getByRole("button", { name: "Ubah" }).click();
   await page.getByLabel("Nilai baru untuk THP (Rupiah)").fill("12000000");
+  await expect(page.getByLabel("Nilai baru untuk THP (Rupiah)")).toHaveValue("12.000.000");
   await slipSection.getByRole("button", { name: "Simpan", exact: true }).click();
 
   await expect(slipSection.getByText("Koreksi belum disimpan")).toBeVisible();

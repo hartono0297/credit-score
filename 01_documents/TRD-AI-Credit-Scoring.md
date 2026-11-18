@@ -443,7 +443,7 @@ Komponen interaktif diberi `'use client'`; komponen presentasional tetap murni.
 --bg: #f6f6f4;      --surface: #ffffff;
 --ink: #1a1b1d;     --muted: #5c6066;
 --line: #e2e2df;    --accent: #0e5b58;
---grade-a: #157f3d; --grade-b: #3f7d20; --grade-c: #9a6a00;
+--grade-a: #13743a; --grade-b: #3f7d20; --grade-c: #9a6a00;
 --grade-d: #b4540a; --grade-e: #a12622;
 ```
 
@@ -597,7 +597,7 @@ npm run start      # jalankan hasil build
           "applicationId": "APP-001",
           "decision": "Approved",
           "reasonCode": "OTHER",
-          "notes": "Seed demo",
+          "notes": "SLIK lancar dan DTI di bawah 20%. Disetujui sesuai pengajuan.",
           "activeGuardrails": []
         }
       ]

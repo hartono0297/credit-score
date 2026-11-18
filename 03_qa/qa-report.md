@@ -6,7 +6,7 @@
 | Tanggal | 18 November 2026 |
 | Branch | `plan/04-qa` |
 | Lingkup | Function, performance, penetration terbatas, anti-slop |
-| Status akhir | Lulus dengan 2 temuan terbuka dan 4 batasan pengujian |
+| Status akhir | Lulus dengan 1 temuan terbuka dan 4 batasan pengujian |
 
 ---
 
@@ -15,13 +15,13 @@
 | Gate | Hasil |
 |---|---|
 | Verifikasi skor seed | Lulus, 1000 / 745 / 615 / 525 / 215, C-05 memicu GR-01 dan GR-02 |
-| Unit test | 19 lulus, 0 gagal, 480,8 ms |
+| Unit test | 21 lulus, 0 gagal |
 | E2E Playwright | 11 lulus, 0 gagal, 33,1 detik |
 | Typecheck | Lulus |
 | Lint | Lulus |
 | Build produksi | Lulus, 12 route |
 | Audit dependency | 14 high dev-only, 0 critical, 0 pada dependency runtime |
-| Anti-slop | 5 PASS, 1 FAIL pada aksesibilitas kontras |
+| Anti-slop | 6 PASS |
 
 Tidak ada perubahan pada perilaku aplikasi, scoring, seed, API, atau UI. Seluruh perubahan sesi ini berada di `03_qa/`, `02_source/package.json`, `02_source/package-lock.json`, dan `.gitignore`.
 
@@ -54,7 +54,7 @@ Context7 tidak tersedia di lingkungan ini. API Playwright dan Next.js mengikuti 
 | Perintah | Hasil |
 |---|---|
 | `cd 02_source && npm run verify` | OK, lima skor dan guardrail sesuai PRD 11.1 |
-| `cd 02_source && npm run test:unit` | 19 pass, 0 fail, 480,8168 ms |
+| `cd 02_source && npm run test:unit` | 21 pass, 0 fail |
 | `cd 02_source && npm run test:e2e` | 11 pass, 0 fail, 33,1 detik |
 | `cd 02_source && npx tsc --noEmit` | Lulus tanpa output |
 | `cd 02_source && npm run lint` | Lulus tanpa output |
@@ -115,7 +115,7 @@ File: `03_qa/automated/e2e/demo-flow.spec.ts`.
 | QD-01 | Tiga locator E2E ambigu: label Reason code juga cocok dengan aria-label tombol mobile, teks rekomendasi muncul dua kali, dan filter section mencakup parent | Low | Selesai | Locator dipertegas di test. Tidak ada perubahan aplikasi |
 | QD-02 | Artefak Playwright awalnya ditulis ke `02_source/test-results` | Low | Selesai | `outputDir` dikunci ke `03_qa/automated/test-results`; entri gitignore ditambah |
 | QD-03 | Satu run penuh mendapat 500 saat menyimpan keputusan C-05 tanpa catatan | Medium | Selesai | Reproduksi ulang pada integrasi: sisa `db.json.*.tmp` menandakan rename sementara gagal di Windows. Store sekarang mengulang rename hingga empat kali dengan jeda 20 sampai 160 ms dan menghapus temp file saat gagal permanen. Dua run penuh E2E lulus setelah perbaikan |
-| QD-04 | Teks Approved dan chip confidence memakai `#157f3d` di atas `#e7f2ea`, rasio kontras 4,42:1 | Low | Terbuka | Di bawah ambang WCAG AA 4,5:1 untuk teks 12px. Nilai ini ditetapkan DESIGN.md; perubahan token menunggu keputusan desain |
+| QD-04 | Teks Approved dan chip confidence memakai `#157f3d` di atas `#e7f2ea`, rasio kontras 4,42:1 | Low | Selesai | Token `--grade-a` diganti `#13743a` di DESIGN.md, TRD, dan `globals.css`; rasio kontras menjadi 5,1:1 |
 | QD-05 | `npm audit` melaporkan 14 high pada dependency dev transitif | Low | Diterima | Berasal dari toolchain ESLint dan `picomatch`. `npm audit --omit=dev` bersih. Tidak ada paparan runtime |
 
 Catatan QD-03: gejala muncul lagi pada satu run integrasi setelah merge, dengan `db.json.21124.23.tmp` tertinggal. Perbaikan ada di `02_source/lib/server/store.ts`: rename diulang pada kode EPERM, EACCES, atau EBUSY, dan temp file dibersihkan bila upaya terakhir gagal. Diverifikasi dengan dua run E2E penuh tanpa kegagalan.
@@ -149,10 +149,10 @@ Mode: During. Skill yang dimuat: `antislop`, `antislop-code`, `antislop-copywrit
 | Tipografi | PASS | Font sistem, angka tabular, skor 48px, label form terlihat, tanpa uppercase lebar atau monospace dekoratif |
 | Warna | PASS | Satu aksen teal, latar kertas, warna grade dan status selalu disertai teks, tanpa gradient, glow, atau glass |
 | Interaksi | PASS | Target sentuh minimal 44px, focus ring 2px, disabled state jelas, transisi dibatasi, `prefers-reduced-motion` tersedia |
-| Aksesibilitas | FAIL | 1 temuan kontras 4,42:1 pada teks Approved dan chip confidence. Perbaikan menunggu perubahan token DESIGN.md. Traversal keyboard manual belum diuji |
+| Aksesibilitas | PASS | Kontras teks Approved dan chip confidence 5,1:1 setelah perubahan token. Traversal keyboard manual belum diuji |
 | Kode | PASS | Tidak ada `console.log` di aplikasi, `debugger`, `any`, atau `dangerouslySetInnerHTML`. Scoring murni dan terpisah dari UI. Komentar hanya untuk invariants yang tidak jelas |
 
-Bukti visual: tangkapan layar aktual pada 1440px dan 390px untuk queue dan detail C-05. Hasil review: hierarki angka, guardrail, dan keputusan terbaca; tidak ada dekorasi di luar DESIGN.md. Satu-satunya FAIL adalah kontras di atas.
+Bukti visual: tangkapan layar aktual pada 1440px dan 390px untuk queue dan detail C-05. Hasil review: hierarki angka, guardrail, dan keputusan terbaca; tidak ada dekorasi di luar DESIGN.md.
 
 ---
 
@@ -185,6 +185,5 @@ Bukti visual: tangkapan layar aktual pada 1440px dan 390px untuk queue dan detai
 
 ## 11. Tindak Lanjut
 
-1. Putuskan perubahan token hijau agar teks Approved dan chip confidence mencapai 4,5:1, lalu perbarui DESIGN.md.
-2. Jalankan uji keyboard, error state server mati, dan install PWA pada build produksi sebelum demo eksternal.
-3. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
+1. Jalankan uji keyboard, error state server mati, dan install PWA pada build produksi sebelum demo eksternal.
+2. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.

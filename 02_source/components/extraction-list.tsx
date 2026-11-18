@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { formatDecimal, formatRupiah } from "@/lib/format";
+import { formatAmountInput, formatDecimal, formatRupiah, parseAmount } from "@/lib/format";
 import type { Extraction } from "@/lib/types";
 import { ConfidenceChip } from "./confidence-chip";
+import { RupiahInput } from "./rupiah-input";
 
 export type CorrectableField = "thp" | "cicilanTerdeteksi" | "inflowBulanan";
 
@@ -56,22 +57,22 @@ function CorrectableRow({
   const shownError = localError ?? error;
 
   function startEditing() {
-    setDraft(String(displayValue));
+    setDraft(formatAmountInput(String(displayValue)));
     setLocalError(null);
     setEditing(true);
   }
 
   async function save() {
-    const trimmed = draft.trim();
-    if (!/^\d+$/.test(trimmed) || !Number.isSafeInteger(Number(trimmed))) {
-      setLocalError("Masukkan angka Rupiah tanpa titik atau koma.");
+    const amount = parseAmount(draft);
+    if (!Number.isSafeInteger(amount)) {
+      setLocalError("Masukkan nominal Rupiah.");
       return;
     }
 
     setSaving(true);
     setLocalError(null);
     try {
-      await onSave(field, Number(trimmed));
+      await onSave(field, amount);
       setEditing(false);
     } catch (saveError) {
       setLocalError(
@@ -114,17 +115,14 @@ function CorrectableRow({
           <label htmlFor={inputId} className="block text-xs font-semibold text-ink">
             Nilai baru untuk {label} (Rupiah)
           </label>
-          <input
+          <RupiahInput
             id={inputId}
             ref={inputRef}
-            type="text"
-            inputMode="numeric"
             value={draft}
-            onChange={(event) => setDraft(event.target.value)}
+            onValueChange={setDraft}
             disabled={saving}
             aria-invalid={shownError ? true : undefined}
             aria-describedby={shownError ? `${hintId} ${errorId}` : hintId}
-            className="mt-1 block min-h-11 w-full rounded-control border border-line-strong bg-surface px-3 text-sm text-ink disabled:bg-surface-muted disabled:text-muted"
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
@@ -133,7 +131,7 @@ function CorrectableRow({
             }}
           />
           <p id={hintId} className="mt-1 text-xs text-muted">
-            Angka Rupiah tanpa titik atau koma, contoh 12000000.
+            Titik ribuan ditambahkan otomatis.
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             <button
