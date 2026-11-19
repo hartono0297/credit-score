@@ -123,7 +123,7 @@ Perjalanan analyst dalam satu siklus review:
 | 3. Membuat | Mengisi form dan upload | Cepat, sedikit field | Form panjang | 6 field + 3 slot upload dalam satu layar |
 | 4. Verifikasi | Mengecek dokumen vs hasil ekstraksi | Percaya pada data | Tidak sadar ekstraksi salah | Confidence + penanda < 80% + input koreksi |
 | 5. Memahami | Membaca skor dan faktor | Alasan yang bisa dijelaskan | Skor terasa black box | Bar +/−, poin, dan narasi 2–3 kalimat |
-| 6. Cek kebijakan | Melihat guardrail | Tahu batasan yang dilanggar | Aturan terlewat | Banner di atas ringkasan + status Manual Review |
+| 6. Cek kebijakan | Melihat guardrail | Tahu batasan yang dilanggar | Aturan terlewat | Guardrail tepat di bawah skor + status Manual Review |
 | 7. Memutuskan | Approve/Reject + reason | Cepat dan tercatat | Alasan tidak standar | Reason code wajib; catatan wajib saat guardrail |
 | 8. Menutup | Kembali ke queue | Yakin keputusan tersimpan | Ragu status berubah | Status ter-update + log di detail |
 | 9. Mobile | Mengulang alur di ponsel | Akses penuh | Tabel terpotong | Kartu di queue; detail bertumpuk; aksi sticky |

@@ -5,7 +5,7 @@
 |---|---|
 | Versi | 2.0 |
 | Tanggal | 19 November 2026 |
-| Mengacu pada | PRD v0.4. Dokumen ini adalah acuan visual tunggal untuk v2.0. PNG di `01_documents/mockups/` masih gaya v1.0 dan diganti tangkapan layar implementasi v2.0 setelah redesign selesai |
+| Mengacu pada | PRD v0.4. Dokumen ini adalah acuan visual tunggal untuk v2.0. PNG di `01_documents/mockups/` adalah tangkapan layar implementasi v2.0 |
 | Mode antislop | During |
 
 ### Riwayat Revisi
@@ -143,7 +143,7 @@ Tidak memakai uppercase dengan letter-spacing lebar atau font monospace.
 - Bagian tidak dibungkus panel atau border. Pemisah: judul bagian, ruang 32px, dan garis `--line` bila perlu.
 - Header: garis bawah tipis, tanpa latar berbeda.
 - Queue: judul `Queue aplikasi` dan ringkasan tiga angka sebaris di bawahnya (Total aplikasi, Manual review, Approved) sebagai angka 24px dengan label kecil, tanpa kartu. Tabel tanpa border luar, garis antar baris. Baris Manual Review memakai latar `--warn-row`.
-- Detail: grid 7/5. Kiri: ringkasan (skor dan skala, guardrail bila ada, rekomendasi, narasi), dokumen, SLIK. Kanan: faktor risiko dan keputusan, sticky di dalam kolom.
+- Detail: grid 7/5. Kiri: ringkasan (skor dan skala, guardrail bila ada, rekomendasi, narasi), dokumen, SLIK. Kanan: faktor risiko dan keputusan, hanya blok keputusan yang sticky di dalam kolom; faktor risiko menggulir biasa karena blok sticky yang tinggi terpotong.
 - Guardrail berada tepat di bawah skor dan skala, sebelum rekomendasi dan narasi, sehingga skor dan peringatan terlihat bersama di atas fold.
 - Form aplikasi baru: dua kolom untuk field pendek, upload tiga kolom, tanpa panel.
 
@@ -155,7 +155,7 @@ Tidak memakai uppercase dengan letter-spacing lebar atau font monospace.
 
 - Latar `--bg-mobile`, padding 12px. Setiap bagian adalah kartu putih radius 14px tanpa border.
 - Queue: satu kartu berisi daftar baris. Baris: nama dan metadata di kiri, skor dan huruf grade di kanan, status di bawah nama, skala kecil di bawah skor. Seluruh baris adalah tautan ke detail dengan tinggi minimal 64px.
-- Detail: kartu ringkasan (skor 48px, chip grade, skala, rekomendasi), kartu guardrail bila ada, lalu Dokumen, SLIK, dan Faktor risiko sebagai bagian yang bisa dibuka-tutup dengan `details` native. Ringkasan dan keputusan selalu terbuka.
+- Detail: kartu ringkasan (skor 48px, chip grade, skala, guardrail bila ada, rekomendasi; guardrail berupa blok tint di dalam kartu ringkasan tepat di bawah skor dan skala, bukan kartu terpisah, sehingga urutan sama dengan §6.1), lalu Dokumen, SLIK, dan Faktor risiko sebagai bagian yang bisa dibuka-tutup dengan `details` native. Ringkasan dan keputusan selalu terbuka.
 - Action bar keputusan menempel di bawah: dua tombol setara, tinggi minimal 48px.
 - Tidak boleh ada horizontal scroll pada 390px.
 
@@ -183,7 +183,7 @@ Tidak memakai uppercase dengan letter-spacing lebar atau font monospace.
 
 ### 7.4 Status
 
-- Desktop: teks status 12px berwarna semantik tanpa latar. Mobile: chip 12px dengan latar tint.
+- Desktop: teks status 12px berwarna semantik tanpa latar. Mobile: chip 12px dengan latar tint. Pada halaman detail aplikasi status memakai gaya chip di semua lebar (satu elemen); gaya teks berlaku untuk queue desktop.
 - Draft: `--muted`. Scored: `--info-ink`. Manual Review: `--warn-ink`. Approved: `--grade-a`. Rejected: `--danger-ink`.
 
 ### 7.5 Confidence chip
@@ -215,7 +215,7 @@ Tidak memakai uppercase dengan letter-spacing lebar atau font monospace.
 
 - Dikelompokkan per dokumen dengan judul bagian kecil.
 - Setiap baris: label, nilai, chip confidence, tombol `Ubah` ghost.
-- Mode edit: input nominal dengan prefiks `Rp`, angka tabular, titik ribuan otomatis saat diketik, tombol `Simpan` dan `Batal`.
+- Mode edit: input nominal dengan prefiks `Rp`, angka tabular, titik ribuan otomatis saat diketik, tombol `Simpan` dan `Batal`. Pada mode edit, `Simpan` dan `Batal` berubah ke `--line` saat hover karena blok edit sudah berlatar `--surface-muted`.
 - Field yang dikoreksi menampilkan label `Hasil koreksi analyst`.
 
 ### 7.10 SLIK table

@@ -440,16 +440,44 @@ Komponen interaktif diberi `'use client'`; komponen presentasional tetap murni.
 - `DESIGN.md` adalah sumber arah visual; TRD hanya menetapkan token awal:
 
 ```css
---bg: #f6f6f4;      --surface: #ffffff;
---ink: #1a1b1d;     --muted: #5c6066;
---line: #e2e2df;    --accent: #0e5b58;
---grade-a: #13743a; --grade-b: #3f7d20; --grade-c: #9a6a00;
---grade-d: #b4540a; --grade-e: #a12622;
+--bg: #ffffff;
+--bg-mobile: #f5f5f3;
+--surface: #ffffff;
+--surface-muted: #f4f4f2;
+--ink: #17181a;
+--ink-hover: #2c2e31;
+--muted: #5c6066;
+--line: #ececea;
+--line-strong: #d9d9d6;
+--accent: #0e5b58;
+--accent-soft: #e3efed;
+
+--grade-a: #13743a;
+--grade-b: #3f7d20;
+--grade-c: #9a6a00;
+--grade-d: #b4540a;
+--grade-e: #a12622;
+
+--band-a: #c8dfcf;
+--band-b: #d6e3cc;
+--band-c: #efe3c3;
+--band-d: #f1dcc8;
+--band-e: #e9c9c6;
+--band-idle: #ecebe6;
+
+--ok-bg: #e7f2ea;
+--warn-bg: #fbf1d9;
+--warn-row: #fdf8ec;
+--warn-ink: #6b4a00;
+--danger-bg: #fbe9e7;
+--danger-ink: #8c1d18;
+--info-bg: #e8eef4;
+--info-ink: #2d465e;
 ```
 
 - Angka memakai `font-variant-numeric: tabular-nums`.
 - Tanpa gradient, glass, shadow berlebihan, atau ilustrasi dekoratif.
-- Satu font stack sistem (tanpa unduhan font eksternal).
+- Plus Jakarta Sans disimpan lokal lewat `next/font/local`, fallback font sistem.
 - Kontras minimum WCAG AA.
 
 ---
@@ -467,7 +495,7 @@ Komponen interaktif diberi `'use client'`; komponen presentasional tetap murni.
 
 ## 15. Performa
 
-- Tanpa gambar, font eksternal, atau library berat.
+- Tanpa gambar, request font ke layanan eksternal saat runtime, atau library berat.
 - Scoring sinkron < 1 ms.
 - Ekstraksi simulasi 1,5 detik (disengaja).
 - Target first load JS wajar (< 200 KB gzip) — bukan SLA, cukup untuk demo.
