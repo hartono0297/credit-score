@@ -38,3 +38,7 @@ export function formatScore(score: number): string {
 export function formatDateTime(iso: string): string {
   return dateTime.format(new Date(iso));
 }
+
+export function scaleMarkerPercent(score: number): number {
+  return Math.min(Math.max(score / 10, 0), 100);
+}

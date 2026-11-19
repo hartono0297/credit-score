@@ -1,31 +1,24 @@
 import { formatScore } from "@/lib/format";
+import { ScoreScale } from "@/components/score-scale";
 import type { Grade } from "@/lib/types";
 
 const GRADE_META: Record<Grade, { label: string; ink: string }> = {
-  A: { label: "Sangat baik", ink: "var(--grade-a)" },
-  B: { label: "Baik", ink: "var(--grade-b)" },
-  C: { label: "Cukup", ink: "var(--grade-c)" },
-  D: { label: "Berisiko", ink: "var(--grade-d)" },
-  E: { label: "Tinggi risiko", ink: "var(--grade-e)" },
+  A: { label: "Sangat baik", ink: "text-grade-a" },
+  B: { label: "Baik", ink: "text-grade-b" },
+  C: { label: "Cukup", ink: "text-grade-c" },
+  D: { label: "Berisiko", ink: "text-grade-d" },
+  E: { label: "Tinggi risiko", ink: "text-grade-e" },
 };
 
 export function GradeChip({ grade, size = "sm" }: { grade: Grade; size?: "sm" | "lg" }) {
   const meta = GRADE_META[grade];
-  const compact = size === "sm";
 
   return (
     <span
       aria-label={`Grade ${grade}, ${meta.label}`}
-      className={`inline-flex items-center justify-center rounded-control border font-semibold ${
-        compact ? "min-h-6 min-w-7 px-1.5 text-xs" : "min-h-8 px-2.5 text-sm"
-      }`}
-      style={{
-        color: meta.ink,
-        backgroundColor: `color-mix(in srgb, ${meta.ink} 10%, var(--surface))`,
-        borderColor: `color-mix(in srgb, ${meta.ink} 32%, var(--surface))`,
-      }}
+      className={`font-semibold ${meta.ink} ${size === "sm" ? "text-xs" : "text-base"}`}
     >
-      {compact ? grade : `${grade}, ${meta.label}`}
+      {size === "sm" ? grade : `${grade}, ${meta.label}`}
     </span>
   );
 }
@@ -41,22 +34,26 @@ export function ScoreBadge({
 }) {
   if (size === "lg") {
     return (
-      <div className="flex flex-wrap items-end gap-3">
-        <p className="text-[48px] font-bold leading-[1.05] tracking-tight text-ink">
-          {formatScore(score)}
-        </p>
-        <p className="pb-1 text-sm font-medium text-muted">dari 1000</p>
-        <div className="pb-1">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <p className="text-5xl font-semibold leading-none tracking-tight text-ink md:text-[56px]">
+            {formatScore(score)}
+          </p>
+          <p className="text-[13px] text-muted">dari 1000</p>
           <GradeChip grade={grade} size="lg" />
         </div>
+        <ScoreScale score={score} grade={grade} size="lg" />
       </div>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-2">
-      <span className="text-xl font-semibold leading-none text-ink">{formatScore(score)}</span>
-      <GradeChip grade={grade} />
+    <span className="inline-flex flex-col gap-1">
+      <span className="inline-flex items-baseline gap-2">
+        <span className="text-lg font-semibold leading-none text-ink">{formatScore(score)}</span>
+        <GradeChip grade={grade} />
+      </span>
+      <ScoreScale score={score} grade={grade} size="sm" />
     </span>
   );
 }
