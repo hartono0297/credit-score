@@ -63,7 +63,7 @@ export function SlikTable({ facilities }: { facilities: SlikFacility[] }) {
         {facilities.map((facility, index) => (
           <li
             key={`${facility.lender}-${index}`}
-            className={`py-3 ${isWorst(facility, worst) ? `rounded-control px-3 ${worstTone}` : ""}`}
+            className={`py-3 ${isWorst(facility, worst) ? `-mx-3 rounded-control px-3 ${worstTone}` : ""}`}
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="min-w-0 break-words text-sm font-semibold text-ink">{facility.lender}</p>

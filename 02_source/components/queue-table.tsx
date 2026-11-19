@@ -88,10 +88,10 @@ export function QueueTable({ applications }: { applications: Application[] }) {
       <div className="rounded-card bg-surface md:hidden">
         <ul className="divide-y divide-line">
           {applications.map((application) => (
-            <li key={application.id}>
+            <li key={application.id} className="first:rounded-t-card last:rounded-b-card">
               <Link
                 href={queueHref(application.id)}
-                className="flex min-h-16 items-start justify-between gap-3 p-4 hover:bg-surface-muted"
+                className="flex min-h-16 items-start rounded-[inherit] justify-between gap-3 p-4 hover:bg-surface-muted"
               >
                 <span className="min-w-0 break-words">
                   <span className="block text-base font-semibold text-ink">
@@ -99,6 +99,9 @@ export function QueueTable({ applications }: { applications: Application[] }) {
                   </span>
                   <span className="mt-0.5 block text-xs text-muted">
                     {application.id}, {application.profileId}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-muted">
+                    {application.product}, {formatRupiah(application.plafon)}, {application.tenor} bulan
                   </span>
                   <span className="mt-2 block">
                     <StatusBadge status={application.status} variant="chip" />

@@ -13,7 +13,6 @@
   --line: #ececea;
   --line-strong: #d9d9d6;
   --accent: #0e5b58;
-  --accent-ink: #ffffff;
   --accent-soft: #e3efed;
 
   --grade-a: #13743a;
@@ -50,7 +49,6 @@
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
 
   --color-grade-a: var(--grade-a);
@@ -103,6 +101,13 @@
 
   :where(a[href], button, summary, label[for], select):not(:disabled) {
     cursor: pointer;
+  }
+
+  :where(a, button, summary, label) {
+    transition:
+      background-color 120ms,
+      color 120ms,
+      border-color 120ms;
   }
 
   :where(button, input, select, textarea):disabled {

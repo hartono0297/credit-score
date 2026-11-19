@@ -29,12 +29,12 @@ export function AppHeader() {
 
   return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
+      <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3 px-3 py-2 md:px-4 lg:px-8">
         <div className="min-w-0">
-          <Link href="/" className="block text-[15px] font-semibold leading-snug text-ink">
+          <Link href="/" className="inline-flex min-h-11 items-center text-[15px] font-semibold leading-snug text-ink">
             AI Credit Scoring Assistant
           </Link>
-          <p role="note" className="text-xs text-muted">
+          <p role="note" className="-mt-2 text-xs text-muted">
             Demo Mode: data simulasi
           </p>
         </div>
@@ -72,7 +72,7 @@ export function AppHeader() {
         className={confirming ? "border-t border-line bg-surface-muted" : ""}
       >
         {confirming ? (
-          <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-3 px-4 py-3 lg:px-8">
+          <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-3 px-3 py-3 md:px-4 lg:px-8">
             <p className="min-w-0 flex-1 text-sm text-ink">
               Reset menghapus perubahan dan memuat ulang lima aplikasi demo.
             </p>

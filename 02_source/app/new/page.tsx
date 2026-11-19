@@ -214,7 +214,7 @@ export default function NewApplicationPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-ink">Aplikasi baru</h1>
+      <h1 className="text-2xl font-semibold leading-tight text-ink">Aplikasi baru</h1>
       <p className="mt-1 text-sm text-muted">
         Pilih profil demo, isi data pengajuan, dan unggah tiga dokumen.
       </p>
@@ -264,7 +264,7 @@ export default function NewApplicationPage() {
                   <button
                     type="button"
                     onClick={() => setProfilesKey((key) => key + 1)}
-                    className="mt-2 inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-danger-ink hover:bg-surface-muted"
+                    className="mt-2 inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
                   >
                     Coba lagi
                   </button>

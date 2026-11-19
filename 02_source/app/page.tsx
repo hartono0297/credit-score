@@ -77,7 +77,7 @@ export default function QueuePage() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">Queue aplikasi</h1>
+          <h1 className="text-2xl font-semibold leading-tight text-ink">Queue aplikasi</h1>
           <p className="mt-1 text-sm text-muted">
             Aplikasi BNPL yang menunggu review analyst.
           </p>
@@ -103,7 +103,7 @@ export default function QueuePage() {
 
       <div className="mt-4">
         {error ? (
-          <div role="alert" className="rounded-card border border-danger-ink bg-danger-bg p-4">
+          <div role="alert" className="rounded-control bg-danger-bg p-4">
             <p className="text-sm font-semibold text-danger-ink">{error}</p>
             <button
               type="button"

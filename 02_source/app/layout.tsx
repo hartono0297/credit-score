@@ -34,10 +34,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Langsung ke konten
         </a>
         <AppHeader />
-        <main id="main" className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 lg:px-8">
+        <main id="main" className="mx-auto w-full max-w-[1200px] flex-1 px-3 py-6 md:px-4 lg:px-8">
           {children}
         </main>
-        <footer className="mx-auto w-full max-w-[1200px] px-4 pb-8 pt-2 text-xs text-muted lg:px-8">
+        <footer className="mx-auto w-full max-w-[1200px] px-3 pb-8 pt-2 text-xs text-muted md:px-4 lg:px-8">
           Demo internal. Data sintetis, tanpa PII nyata.
         </footer>
         <PwaRegister />
