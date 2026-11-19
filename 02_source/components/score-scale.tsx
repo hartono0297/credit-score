@@ -39,13 +39,17 @@ export function ScoreScale({
       className={large ? "w-full" : "w-[110px]"}
     >
       <div className="relative">
-        <div className={`flex ${large ? "h-2 gap-0.5" : "h-1.5 gap-px"}`}>
-          {GRADE_BANDS.map((band) => (
+        <div className="flex">
+          {GRADE_BANDS.map((band, i) => (
             <span
               key={band.grade}
-              className={`rounded-sm ${large || band.grade === grade ? BAND_CLASS[band.grade] : "bg-band-idle"}`}
-              style={{ flexGrow: band.to - band.from + 1, flexBasis: 0 }}
-            />
+              className={`${large ? "h-2" : "h-1.5"} ${i > 0 ? (large ? "pl-0.5" : "pl-px") : ""}`}
+              style={{ width: `${(band.to === 1000 ? 1000 - band.from : band.to + 1 - band.from) / 10}%` }}
+            >
+              <span
+                className={`block h-full rounded-sm ${large || band.grade === grade ? BAND_CLASS[band.grade] : "bg-band-idle"}`}
+              />
+            </span>
           ))}
         </div>
         {large && (
