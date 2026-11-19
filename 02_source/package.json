@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "verify": "tsx scripts/verify-scores.ts",
     "test:unit": "tsx --test ../03_qa/automated/unit/scoring.test.ts ../03_qa/automated/unit/extraction.test.ts ../03_qa/automated/unit/format.test.ts",
-    "test:e2e": "playwright test --config ../03_qa/automated/playwright.config.ts"
+    "test:e2e": "playwright test --config ../03_qa/automated/playwright.config.ts",
+    "qa": "npm run verify && npm run test:unit && npm run typecheck && npm run lint && npm run build && npm run test:e2e"
   },
   "dependencies": {
     "next": "16.4.6",

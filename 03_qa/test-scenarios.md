@@ -7,7 +7,7 @@
 | Tanggal eksekusi | 18 November 2026 |
 | Commit acuan | `0d642cd` (eksekusi awal), diperbarui pada perbaikan berikutnya |
 | Lingkungan | Windows 11, Node 22.14.0, Chrome 156.0.8078.82 |
-| Perintah utama | `cd 02_source && npm run verify && npm run test:unit && npm run test:e2e` |
+| Perintah utama | `cd 02_source && npm run qa` (lihat `03_qa/README.md`) |
 
 Status yang dipakai: `Lulus`, `Lulus (parsial)`, `Tidak diuji`, `Tidak diukur`.
 

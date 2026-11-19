@@ -171,6 +171,7 @@ Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Next.js, React,
     verify-scores.ts
 
 03_qa/
+  README.md
   test-scenarios.md
   qa-report.md
   automated/
@@ -539,6 +540,7 @@ npm run dev        # http://localhost:3000
 npm run verify     # verifikasi skor 5 profil
 npm run test:unit  # unit test
 npm run test:e2e   # E2E Playwright
+npm run qa         # semua cek: verify, unit, typecheck, lint, build, E2E
 npm run build      # build server
 npm run start      # jalankan hasil build
 ```

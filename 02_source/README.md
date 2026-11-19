@@ -31,6 +31,7 @@ Buka `http://localhost:3000`.
 | `npm run test:e2e` | E2E Playwright pada port 3108 memakai Chrome terpasang. |
 | `npm run typecheck` | Typecheck TypeScript tanpa emit. |
 | `npm run lint` | ESLint. |
+| `npm run qa` | Semua cek di atas berurutan: verify, unit, typecheck, lint, build, E2E. Detail di `../03_qa/README.md`. |
 
 ## Data demo
 

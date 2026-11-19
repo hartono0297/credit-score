@@ -133,6 +133,8 @@ npm run test:unit
 npm run test:e2e
 ```
 
+`npm run qa` menjalankan verify, unit, typecheck, lint, build, dan E2E berurutan dan berhenti di langkah pertama yang gagal. Panduan lengkap ada di `03_qa/README.md`.
+
 ---
 
 ## 7. Severity dan defect
