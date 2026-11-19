@@ -3,13 +3,15 @@
 :root {
   color-scheme: light;
 
-  --bg: #f6f6f4;
+  --bg: #ffffff;
+  --bg-mobile: #f5f5f3;
   --surface: #ffffff;
-  --surface-muted: #efefec;
-  --ink: #1a1b1d;
+  --surface-muted: #f4f4f2;
+  --ink: #17181a;
+  --ink-hover: #2c2e31;
   --muted: #5c6066;
-  --line: #e2e2df;
-  --line-strong: #cfcfc9;
+  --line: #ececea;
+  --line-strong: #d9d9d6;
   --accent: #0e5b58;
   --accent-ink: #ffffff;
   --accent-soft: #e3efed;
@@ -20,8 +22,16 @@
   --grade-d: #b4540a;
   --grade-e: #a12622;
 
+  --band-a: #c8dfcf;
+  --band-b: #d6e3cc;
+  --band-c: #efe3c3;
+  --band-d: #f1dcc8;
+  --band-e: #e9c9c6;
+  --band-idle: #ecebe6;
+
   --ok-bg: #e7f2ea;
   --warn-bg: #fbf1d9;
+  --warn-row: #fdf8ec;
   --warn-ink: #6b4a00;
   --danger-bg: #fbe9e7;
   --danger-ink: #8c1d18;
@@ -31,9 +41,11 @@
 
 @theme inline {
   --color-bg: var(--bg);
+  --color-bg-mobile: var(--bg-mobile);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
   --color-ink: var(--ink);
+  --color-ink-hover: var(--ink-hover);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
@@ -47,20 +59,26 @@
   --color-grade-d: var(--grade-d);
   --color-grade-e: var(--grade-e);
 
+  --color-band-a: var(--band-a);
+  --color-band-b: var(--band-b);
+  --color-band-c: var(--band-c);
+  --color-band-d: var(--band-d);
+  --color-band-e: var(--band-e);
+  --color-band-idle: var(--band-idle);
+
   --color-ok-bg: var(--ok-bg);
   --color-warn-bg: var(--warn-bg);
+  --color-warn-row: var(--warn-row);
   --color-warn-ink: var(--warn-ink);
   --color-danger-bg: var(--danger-bg);
   --color-danger-ink: var(--danger-ink);
   --color-info-bg: var(--info-bg);
   --color-info-ink: var(--info-ink);
 
-  --radius-control: 4px;
-  --radius-card: 8px;
-  --radius-panel: 12px;
+  --radius-control: 8px;
+  --radius-card: 14px;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 @layer base {
@@ -71,10 +89,16 @@
   body {
     background-color: var(--bg);
     color: var(--ink);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-      Arial, sans-serif;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
+  }
+
+  @media (max-width: 767px) {
+    html,
+    body {
+      background-color: var(--bg-mobile);
+    }
   }
 
   :where(a[href], button, summary, label[for], select):not(:disabled) {

@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { resetDemo } from "@/lib/api-client";
 
 export function AppHeader() {
   const router = useRouter();
+  const isQueue = usePathname() === "/";
   const [confirming, setConfirming] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,12 +30,14 @@ export function AppHeader() {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-8">
-        <Link href="/" className="min-w-0">
-          <span className="block text-base font-semibold tracking-tight text-ink">
+        <div className="min-w-0">
+          <Link href="/" className="block text-[15px] font-semibold leading-snug text-ink">
             AI Credit Scoring Assistant
-          </span>
-          <span className="block text-xs text-muted">Demo untuk credit analyst BNPL</span>
-        </Link>
+          </Link>
+          <p role="note" className="text-xs text-muted">
+            Demo Mode: data simulasi
+          </p>
+        </div>
 
         <nav aria-label="Aksi utama" className="flex flex-wrap items-center gap-2">
           <button
@@ -45,13 +48,18 @@ export function AppHeader() {
             }}
             aria-expanded={confirming}
             aria-controls={panelId}
-            className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
+            className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
           >
             Reset Demo
           </button>
           <Link
             href="/new"
-            className="inline-flex min-h-11 items-center rounded-control bg-accent px-3 text-sm font-semibold text-accent-ink hover:bg-accent/90"
+            data-variant={isQueue ? "primary" : "secondary"}
+            className={
+              isQueue
+                ? "inline-flex min-h-11 items-center rounded-control bg-ink px-3 text-sm font-semibold text-white hover:bg-ink-hover"
+                : "inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
+            }
           >
             Aplikasi Baru
           </Link>

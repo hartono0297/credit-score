@@ -11,6 +11,21 @@ test.beforeEach(async ({ request }) => {
   expect(response.ok()).toBeTruthy();
 });
 
+test("header v2: label demo di header dan tombol utama hanya di queue", async ({ page }) => {
+  const newLink = page.getByRole("link", { name: "Aplikasi Baru" });
+
+  await page.goto("/");
+  await expect(page.getByRole("banner").getByRole("note")).toContainText(
+    "Demo Mode: data simulasi",
+  );
+  await expect(newLink).toHaveAttribute("data-variant", "primary");
+
+  for (const path of ["/new", "/application?id=APP-005"]) {
+    await page.goto(path);
+    await expect(newLink).toHaveAttribute("data-variant", "secondary");
+  }
+});
+
 test("US-01 queue menampilkan lima seed dan ringkasan", async ({ page }) => {
   await page.goto("/");
 
