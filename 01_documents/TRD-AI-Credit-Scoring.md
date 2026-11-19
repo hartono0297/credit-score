@@ -122,12 +122,13 @@ Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Versi paket dik
     sw.js
     icons/
   app/
-    layout.tsx               root layout + demo banner
+    layout.tsx               root layout + font
     page.tsx                 Queue
     new/page.tsx             Form aplikasi baru
     application/page.tsx     Detail (client, baca ?id=)
     manifest.ts              metadata manifest
     globals.css              token + Tailwind
+    fonts/                   Plus Jakarta Sans (lokal)
     api/
       applications/route.ts
       applications/[id]/route.ts
@@ -137,10 +138,12 @@ Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Versi paket dik
       profiles/route.ts
       reset/route.ts
   components/
-    app-header.tsx
-    demo-banner.tsx
+    app-header.tsx           header + label Demo Mode
+    application-detail.tsx
     queue-table.tsx
     score-badge.tsx
+    score-scale.tsx
+    rupiah-input.tsx
     status-badge.tsx
     confidence-chip.tsx
     factor-bar.tsx
@@ -406,7 +409,8 @@ Jika tidak ada faktor negatif, gunakan kalimat positif saja.
 | `AppHeader` | Judul, label demo, reset, navigasi |
 | `QueueTable` | Tabel desktop / kartu mobile |
 | `ScoreBadge` | Skor + grade, teks selalu ada |
-| `StatusBadge` | Status aplikasi |
+| `StatusBadge` | Status aplikasi; `variant` `chip` (mobile) atau `text` (tabel desktop) |
+| `ScoreScale` | Skala skor 0 sampai 1000 dengan pita grade dan penanda skor |
 | `ConfidenceChip` | Persen + penanda < 80% |
 | `FactorBar` | Bar +/− dengan poin dan label |
 | `GuardrailBanner` | Daftar aturan yang terpicu |
@@ -583,7 +587,7 @@ npm run start      # jalankan hasil build
 | Perbedaan Tailwind v4 vs v3 | Ikuti setup `create-next-app`; jangan campur konfigurasi |
 | PWA tidak dianggap "mobile app" oleh penilai | Catat interpretasi di QA report dan presentasi |
 | Browser Playwright gagal diunduh | Unit test tetap berjalan; E2E manual didokumentasikan |
-| Data demo dianggap nyata | Banner permanen + data fiktif |
+| Data demo dianggap nyata | Label Demo Mode permanen + data fiktif |
 | Scope melebar | Tidak ada DB/OCR/ML; perubahan scope harus mengubah PRD |
 
 ---

@@ -207,14 +207,15 @@ Form satu halaman:
 
 ### 8.3 Detail Aplikasi
 
-Header: nama, ID, skor besar, badge grade, status, banner Demo Mode.
+Header: nama, ID, skor besar, badge grade, status. Label Demo Mode ada di header aplikasi.
 
 Urutan bagian:
 
 1. **Ringkasan**
-   - Skor 0–1000, grade, rekomendasi plafon dan tenor.
+   - Skor 0–1000, grade, dan skala skor.
+   - Banner guardrail bila ada, tepat di bawah skor dan skala.
+   - Rekomendasi plafon dan tenor.
    - Narasi 2–3 kalimat.
-   - Banner guardrail bila ada.
 2. **Dokumen**
    - Daftar file yang diunggah (nama file, jenis).
    - Field ekstraksi: label, nilai, confidence (hijau ≥ 0,80; kuning < 0,80).
