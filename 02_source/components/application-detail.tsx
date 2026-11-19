@@ -53,7 +53,7 @@ function BackToQueue() {
   );
 }
 
-// Native details cannot be open-only on wide screens by CSS alone, so toggling is blocked there.
+// Native details cannot be open-only on wide screens by CSS alone, so wide screens force it open and block toggling.
 function DisclosureSection({
   title,
   children,
@@ -62,9 +62,16 @@ function DisclosureSection({
   children: ReactNode;
 }) {
   const desktop = useIsDesktop();
+  const [open, setOpen] = useState(true);
 
   return (
-    <details open className="group rounded-card bg-surface md:rounded-none md:bg-transparent">
+    <details
+      open={open || desktop}
+      onToggle={(event) => {
+        if (!desktop) setOpen(event.currentTarget.open);
+      }}
+      className="group rounded-card bg-surface md:rounded-none md:bg-transparent"
+    >
       <summary
         tabIndex={desktop ? -1 : undefined}
         onClick={(event) => {

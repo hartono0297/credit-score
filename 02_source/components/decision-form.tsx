@@ -129,7 +129,7 @@ export function DecisionForm({
                 style={{ accentColor: "var(--accent)" }}
               />
               <span>
-                <span className="block text-[13px] font-medium text-ink">Approve</span>
+                <span className="block text-sm font-semibold text-accent">Approve</span>
                 <span className="block text-xs text-muted">
                   Setujui pengajuan sesuai plafon dan tenor.
                 </span>
