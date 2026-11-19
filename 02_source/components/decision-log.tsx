@@ -25,11 +25,11 @@ export function DecisionLog({ entries }: { entries: DecisionLogEntry[] }) {
     );
 
   return (
-    <ol className="space-y-3">
+    <ol className="divide-y divide-line">
       {newestFirst.map(({ entry, index }) => (
         <li
           key={`${entry.timestamp}-${index}`}
-          className="rounded-card border border-line bg-surface p-3"
+          className="py-3 first:pt-0"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <StatusBadge status={entry.decision} />

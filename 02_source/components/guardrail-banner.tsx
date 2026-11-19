@@ -8,9 +8,9 @@ export function GuardrailBanner({
   return (
     <section
       aria-labelledby="guardrail-title"
-      className="rounded-card border border-warn-ink bg-warn-bg p-4 text-warn-ink"
+      className="rounded-control bg-warn-bg p-4 text-warn-ink"
     >
-      <h3 id="guardrail-title" className="text-sm font-semibold">
+      <h3 id="guardrail-title" className="text-[13px] font-semibold">
         Manual Review diperlukan
       </h3>
       <ul className="mt-2 space-y-1 text-sm">
@@ -20,7 +20,7 @@ export function GuardrailBanner({
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-xs font-medium">
+      <p className="mt-2 text-xs">
         Keputusan tetap dapat dicatat. Catatan wajib diisi saat menyimpan keputusan.
       </p>
     </section>

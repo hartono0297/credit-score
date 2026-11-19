@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import { ApiError, getApplication, updateExtraction } from "@/lib/api-client";
 import type { CorrectableField } from "@/components/extraction-list";
@@ -25,17 +25,35 @@ const DOCUMENT_LABELS: Record<string, string> = {
   MUTASI: "Mutasi rekening",
 };
 
+const SECTION_CARD = "rounded-card bg-surface p-4 md:rounded-none md:bg-transparent md:p-0";
+const DESKTOP_QUERY = "(min-width: 768px)";
+
+function subscribeDesktop(onChange: () => void) {
+  const query = window.matchMedia(DESKTOP_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+function useIsDesktop() {
+  return useSyncExternalStore(
+    subscribeDesktop,
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => false,
+  );
+}
+
 function BackToQueue() {
   return (
     <Link
       href="/"
-      className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-accent hover:bg-accent-soft"
+      className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-accent hover:bg-surface-muted"
     >
       Kembali ke queue
     </Link>
   );
 }
 
+// Native details cannot be open-only on wide screens by CSS alone, so toggling is blocked there.
 function DisclosureSection({
   title,
   children,
@@ -43,19 +61,24 @@ function DisclosureSection({
   title: string;
   children: ReactNode;
 }) {
+  const desktop = useIsDesktop();
+
   return (
-    <details
-      open
-      className="group rounded-panel border border-line bg-surface lg:[&>div]:block"
-    >
-      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 [&::-webkit-details-marker]:hidden lg:pointer-events-none lg:cursor-default">
-        <h2 className="text-base font-semibold text-ink">{title}</h2>
-        <span aria-hidden="true" className="text-xs text-muted lg:hidden">
+    <details open className="group rounded-card bg-surface md:rounded-none md:bg-transparent">
+      <summary
+        tabIndex={desktop ? -1 : undefined}
+        onClick={(event) => {
+          if (desktop) event.preventDefault();
+        }}
+        className="flex min-h-12 list-none items-center justify-between gap-2 px-4 py-3 md:min-h-0 md:cursor-default md:p-0 [&::-webkit-details-marker]:hidden"
+      >
+        <h2 className="text-[15px] font-semibold leading-snug text-ink">{title}</h2>
+        <span aria-hidden="true" className="text-xs text-muted md:hidden">
           <span className="group-open:hidden">Tampilkan</span>
           <span className="hidden group-open:inline">Sembunyikan</span>
         </span>
       </summary>
-      <div className="px-4 pb-4">{children}</div>
+      <div className="px-4 pb-4 md:px-0 md:pb-0 md:pt-3">{children}</div>
     </details>
   );
 }
@@ -130,7 +153,7 @@ export function ApplicationDetail() {
   if (!validId) {
     return (
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Detail aplikasi</h1>
+        <h1 className="text-2xl font-semibold leading-tight text-ink">Detail aplikasi</h1>
         <div className="mt-4">
           <EmptyState
             title="ID aplikasi tidak valid."
@@ -146,7 +169,7 @@ export function ApplicationDetail() {
   if (loading) {
     return (
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Detail aplikasi</h1>
+        <h1 className="text-2xl font-semibold leading-tight text-ink">Detail aplikasi</h1>
         <p role="status" className="mt-4 text-sm text-muted">
           Memuat aplikasi...
         </p>
@@ -157,7 +180,7 @@ export function ApplicationDetail() {
   if (notFound) {
     return (
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Detail aplikasi</h1>
+        <h1 className="text-2xl font-semibold leading-tight text-ink">Detail aplikasi</h1>
         <div className="mt-4">
           <EmptyState
             title="Aplikasi tidak ditemukan."
@@ -173,15 +196,15 @@ export function ApplicationDetail() {
   if (error || !application || !profile) {
     return (
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Detail aplikasi</h1>
-        <div role="alert" className="mt-4 rounded-card border border-danger-ink bg-danger-bg p-4">
+        <h1 className="text-2xl font-semibold leading-tight text-ink">Detail aplikasi</h1>
+        <div role="alert" className="mt-4 rounded-control bg-danger-bg p-4">
           <p className="text-sm font-semibold text-danger-ink">
             {error ?? "Data aplikasi tidak lengkap."}
           </p>
           <button
             type="button"
             onClick={() => setReloadKey((key) => key + 1)}
-            className="mt-3 inline-flex min-h-11 items-center rounded-control border border-danger-ink bg-surface px-3 text-sm font-semibold text-danger-ink"
+            className="mt-3 inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
           >
             Coba lagi
           </button>
@@ -199,15 +222,15 @@ export function ApplicationDetail() {
 
   return (
     <div className="pb-20 md:pb-0">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
-        <div className="min-w-0 space-y-4">
-          <section aria-labelledby="ringkasan-title" className="rounded-panel border border-line bg-surface p-4">
+      <div className="grid gap-3 md:gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        <div className="min-w-0 space-y-3 md:space-y-8">
+          <section aria-labelledby="ringkasan-title" className={SECTION_CARD}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs text-muted">
                   {application.id}, {application.profileId}, {application.product}
                 </p>
-                <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink">
+                <h1 className="mt-1 break-words text-2xl font-semibold leading-tight text-ink">
                   {application.customerName}
                 </h1>
                 <p className="mt-1 text-sm text-muted">
@@ -226,9 +249,14 @@ export function ApplicationDetail() {
             </h2>
 
             {score ? (
-              <div className="mt-4 border-t border-line pt-4">
+              <div className="mt-6">
                 <ScoreBadge score={score.score} grade={score.grade} size="lg" />
-                <p className="mt-3 text-sm leading-relaxed text-ink">
+                {score.guardrails.length > 0 ? (
+                  <div className="mt-4">
+                    <GuardrailBanner guardrails={score.guardrails} />
+                  </div>
+                ) : null}
+                <p className="mt-4 text-sm leading-relaxed text-ink">
                   {score.recommendation.startsWith("Rekomendasi")
                     ? score.recommendation
                     : `Rekomendasi: ${score.recommendation}`}
@@ -236,16 +264,12 @@ export function ApplicationDetail() {
                 <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-muted">
                   {score.narrative}
                 </p>
-                {score.guardrails.length > 0 ? (
-                  <div className="mt-4">
-                    <GuardrailBanner guardrails={score.guardrails} />
-                  </div>
-                ) : null}
               </div>
             ) : (
-              <p className="mt-4 border-t border-line pt-4 text-sm text-muted">
-                Skor belum tersedia. Ekstrak dokumen terlebih dahulu.
-              </p>
+              <div className="mt-6">
+                <p className="text-lg font-semibold text-ink">Belum diskor</p>
+                <p className="mt-1 text-sm text-muted">Ekstrak dokumen terlebih dahulu.</p>
+              </div>
             )}
           </section>
 
@@ -293,7 +317,7 @@ export function ApplicationDetail() {
           </DisclosureSection>
         </div>
 
-        <div className="min-w-0 space-y-4">
+        <div className="min-w-0 space-y-3 md:space-y-8">
           <DisclosureSection title="Faktor risiko">
             {score ? (
               <div>
@@ -313,9 +337,9 @@ export function ApplicationDetail() {
 
           <section
             aria-labelledby="keputusan-title"
-            className="rounded-panel border border-line bg-surface p-4 lg:sticky lg:top-4"
+            className={`${SECTION_CARD} lg:sticky lg:top-4`}
           >
-            <h2 id="keputusan-title" className="text-base font-semibold text-ink">
+            <h2 id="keputusan-title" className="text-[15px] font-semibold leading-snug text-ink">
               Keputusan
             </h2>
             <div className="mt-3">
@@ -329,7 +353,7 @@ export function ApplicationDetail() {
             </div>
 
             <div className="mt-5 border-t border-line pt-4">
-              <h3 className="text-sm font-semibold text-ink">Log keputusan</h3>
+              <h3 className="text-[13px] font-medium text-ink">Log keputusan</h3>
               <div className="mt-2">
                 <DecisionLog entries={application.log} />
               </div>

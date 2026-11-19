@@ -85,6 +85,40 @@ test("queue v2: baris mobile adalah link dan Draft tanpa skala", async ({ page, 
   await request.post("/api/reset");
 });
 
+test("detail v2: skala skor dan guardrail di bawah skor, Draft tanpa skala", async ({
+  page,
+  request,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/application?id=APP-005");
+
+  const summary = page.getByRole("region", { name: "Ringkasan" });
+  const scale = summary.getByRole("img", { name: "Skala skor 215 dari 1000, grade E" });
+  await expect(scale).toBeVisible();
+
+  const scaleBox = await scale.boundingBox();
+  const guardrailBox = await summary
+    .getByRole("heading", { name: "Manual Review diperlukan" })
+    .boundingBox();
+  const recommendationBox = await summary
+    .getByText("Rekomendasi reject", { exact: true })
+    .boundingBox();
+
+  expect(scaleBox && guardrailBox && recommendationBox).toBeTruthy();
+  expect(guardrailBox!.y).toBeGreaterThan(scaleBox!.y);
+  expect(guardrailBox!.y).toBeLessThan(recommendationBox!.y);
+
+  const created = await request.post("/api/applications", {
+    data: { profileId: "C-01", plafon: 10000000, tenor: 12, dp: 0 },
+  });
+  expect(created.ok()).toBeTruthy();
+
+  await page.goto("/application?id=APP-006");
+  const draftSummary = page.getByRole("region", { name: "Ringkasan" });
+  await expect(draftSummary.getByText("Belum diskor", { exact: true })).toBeVisible();
+  await expect(draftSummary.getByRole("img")).toHaveCount(0);
+});
+
 test("SC-02 guardrail C-05, validasi keputusan, log, dan perubahan keputusan", async ({
   page,
 }) => {

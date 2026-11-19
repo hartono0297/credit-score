@@ -18,7 +18,7 @@ export function SlikTable({ facilities }: { facilities: SlikFacility[] }) {
       <table className="hidden w-full border-collapse text-left text-sm md:table">
         <caption className="sr-only">Fasilitas kredit pada SLIK simulasi</caption>
         <thead>
-          <tr className="border-b border-line-strong">
+          <tr className="border-b border-line">
             <th scope="col" className="py-2 pr-3 font-semibold text-ink">
               Lender
             </th>
@@ -42,7 +42,7 @@ export function SlikTable({ facilities }: { facilities: SlikFacility[] }) {
               key={`${facility.lender}-${index}`}
               className={`border-b border-line ${isWorst(facility, worst) ? worstTone : ""}`}
             >
-              <th scope="row" className="py-2 pr-3 font-medium text-ink">
+              <th scope="row" className="break-words py-2 pr-3 font-medium text-ink">
                 {facility.lender}
               </th>
               <td className="py-2 pr-3 text-muted">{facility.jenis}</td>
@@ -59,16 +59,14 @@ export function SlikTable({ facilities }: { facilities: SlikFacility[] }) {
         </tbody>
       </table>
 
-      <ul className="space-y-3 md:hidden">
+      <ul className="divide-y divide-line md:hidden">
         {facilities.map((facility, index) => (
           <li
             key={`${facility.lender}-${index}`}
-            className={`rounded-card border border-line p-3 ${
-              isWorst(facility, worst) ? worstTone : "bg-surface"
-            }`}
+            className={`py-3 ${isWorst(facility, worst) ? `rounded-control px-3 ${worstTone}` : ""}`}
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <p className="text-sm font-semibold text-ink">{facility.lender}</p>
+              <p className="min-w-0 break-words text-sm font-semibold text-ink">{facility.lender}</p>
               <p className="text-xs text-muted">{facility.jenis}</p>
             </div>
             <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">

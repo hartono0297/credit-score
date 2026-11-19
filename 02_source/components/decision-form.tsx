@@ -105,13 +105,13 @@ export function DecisionForm({
     <>
       <form id="form-keputusan" onSubmit={handleSubmit} noValidate>
         <fieldset>
-          <legend className="text-sm font-semibold text-ink">Keputusan</legend>
+          <legend className="text-[13px] font-medium text-ink">Keputusan</legend>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             <label
-              className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-card border p-3 ${
+              className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-control ${
                 decision === "Approved"
-                  ? "border-accent bg-accent-soft"
-                  : "border-line bg-surface hover:bg-surface-muted"
+                  ? "border-2 border-accent bg-accent-soft p-[11px]"
+                  : "border border-accent bg-surface p-3 hover:bg-accent-soft"
               }`}
             >
               <input
@@ -129,7 +129,7 @@ export function DecisionForm({
                 style={{ accentColor: "var(--accent)" }}
               />
               <span>
-                <span className="block text-sm font-semibold text-ink">Approve</span>
+                <span className="block text-[13px] font-medium text-ink">Approve</span>
                 <span className="block text-xs text-muted">
                   Setujui pengajuan sesuai plafon dan tenor.
                 </span>
@@ -137,10 +137,10 @@ export function DecisionForm({
             </label>
 
             <label
-              className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-card border p-3 ${
+              className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-control ${
                 decision === "Rejected"
-                  ? "border-danger-ink bg-danger-bg"
-                  : "border-line bg-surface hover:bg-surface-muted"
+                  ? "border-2 border-danger-ink bg-danger-bg p-[11px]"
+                  : "border border-danger-ink bg-surface p-3 hover:bg-danger-bg"
               }`}
             >
               <input
@@ -154,7 +154,7 @@ export function DecisionForm({
                 }}
                 aria-describedby={errors.decision ? decisionErrorId : undefined}
                 className="mt-0.5 h-5 w-5 shrink-0"
-                style={{ accentColor: "var(--accent)" }}
+                style={{ accentColor: "var(--danger-ink)" }}
               />
               <span>
                 <span className="block text-sm font-semibold text-danger-ink">Reject</span>
@@ -170,7 +170,7 @@ export function DecisionForm({
         </fieldset>
 
         <div className="mt-4">
-          <label htmlFor="reason-code" className="block text-sm font-semibold text-ink">
+          <label htmlFor="reason-code" className="block text-[13px] font-medium text-ink">
             Reason code
           </label>
           <select
@@ -200,7 +200,7 @@ export function DecisionForm({
         </div>
 
         <div className="mt-4">
-          <label htmlFor="catatan" className="block text-sm font-semibold text-ink">
+          <label htmlFor="catatan" className="block text-[13px] font-medium text-ink">
             {guardrailIds.length > 0 ? "Catatan (wajib karena guardrail aktif)" : "Catatan (opsional)"}
           </label>
           {guardrailIds.length > 0 ? (
@@ -248,7 +248,7 @@ export function DecisionForm({
         <button
           type="submit"
           disabled={submitting}
-          className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-control bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/90 disabled:bg-surface-muted disabled:text-muted"
+          className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-control bg-ink px-4 text-sm font-semibold text-white hover:bg-ink-hover disabled:bg-surface-muted disabled:text-muted"
         >
           {submitting ? "Menyimpan keputusan..." : "Simpan Keputusan"}
         </button>

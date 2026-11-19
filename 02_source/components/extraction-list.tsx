@@ -103,7 +103,7 @@ function CorrectableRow({
             type="button"
             onClick={startEditing}
             disabled={disabled}
-            className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-accent hover:bg-accent-soft disabled:bg-surface-muted disabled:text-muted"
+            className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-accent hover:bg-surface-muted disabled:text-muted"
           >
             Ubah
           </button>
@@ -111,7 +111,7 @@ function CorrectableRow({
       </div>
 
       {editing ? (
-        <div className="mt-3 rounded-control border border-line bg-surface-muted p-3">
+        <div className="mt-3 rounded-control bg-surface-muted p-3">
           <label htmlFor={inputId} className="block text-xs font-semibold text-ink">
             Nilai baru untuk {label} (Rupiah)
           </label>
@@ -138,7 +138,7 @@ function CorrectableRow({
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex min-h-11 items-center rounded-control border border-accent bg-surface px-3 text-sm font-semibold text-accent hover:bg-accent-soft disabled:bg-surface-muted disabled:text-muted"
+              className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-line disabled:bg-surface-muted disabled:text-muted"
             >
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
@@ -149,7 +149,7 @@ function CorrectableRow({
                 setLocalError(null);
               }}
               disabled={saving}
-              className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-muted hover:bg-surface disabled:text-muted"
+              className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-muted hover:bg-line disabled:text-muted"
             >
               Batal
             </button>

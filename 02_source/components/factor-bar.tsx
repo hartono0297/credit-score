@@ -16,9 +16,9 @@ export function FactorBar({ factor, maxAbs }: { factor: Factor; maxAbs: number }
   const width = `${weight * 50}%`;
   const pointsClass =
     factor.direction === "positive"
-      ? "text-accent"
+      ? "text-grade-a"
       : factor.direction === "negative"
-        ? "text-grade-d"
+        ? "text-grade-e"
         : "text-muted";
 
   return (
@@ -33,13 +33,13 @@ export function FactorBar({ factor, maxAbs }: { factor: Factor; maxAbs: number }
           <span className="text-xs text-muted">{DIRECTION_TEXT[factor.direction]}</span>
         </p>
       </div>
-      <div className="relative mt-2 h-2 overflow-hidden rounded-[2px] bg-surface-muted" aria-hidden="true">
+      <div className="relative mt-2 h-1.5 overflow-hidden rounded-[2px] bg-surface-muted" aria-hidden="true">
         <span className="absolute inset-y-0 left-1/2 w-px bg-line-strong" />
         {factor.direction === "positive" ? (
-          <span className="absolute inset-y-0 left-1/2 rounded-[2px] bg-accent" style={{ width }} />
+          <span className="absolute inset-y-0 left-1/2 rounded-[2px] bg-grade-a" style={{ width }} />
         ) : null}
         {factor.direction === "negative" ? (
-          <span className="absolute inset-y-0 right-1/2 rounded-[2px] bg-grade-d" style={{ width }} />
+          <span className="absolute inset-y-0 right-1/2 rounded-[2px] bg-grade-e" style={{ width }} />
         ) : null}
       </div>
       <p className="mt-1.5 text-xs text-muted">{factor.detail}</p>
