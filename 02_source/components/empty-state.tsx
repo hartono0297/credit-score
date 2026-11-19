@@ -10,7 +10,7 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <div role="status" className="rounded-card border border-line bg-surface p-6">
+    <div role="status" className="rounded-card bg-surface p-6">
       <p className="text-base font-semibold text-ink">{title}</p>
       {description ? (
         <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-muted">{description}</p>

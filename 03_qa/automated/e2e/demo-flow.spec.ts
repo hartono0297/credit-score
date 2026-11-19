@@ -64,6 +64,27 @@ test("US-01 queue menampilkan lima seed dan ringkasan", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Andi Pratama", level: 1 })).toBeVisible();
 });
 
+test("queue v2: baris mobile adalah link dan Draft tanpa skala", async ({ page, request }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const jokoRow = page.getByRole("link", { name: /Joko Susilo/ });
+  await expect(jokoRow).toBeVisible();
+  await expect(jokoRow).toHaveAttribute("href", "/application?id=APP-005");
+
+  const created = await request.post("/api/applications", {
+    data: { profileId: "C-01", plafon: 10000000, tenor: 12, dp: 0 },
+  });
+  expect(created.ok()).toBeTruthy();
+
+  await page.reload();
+  const draftRow = page.getByRole("listitem").filter({ hasText: "Draft" });
+  await expect(draftRow).toHaveCount(1);
+  await expect(draftRow).toContainText("Belum diskor");
+
+  await request.post("/api/reset");
+});
+
 test("SC-02 guardrail C-05, validasi keputusan, log, dan perubahan keputusan", async ({
   page,
 }) => {

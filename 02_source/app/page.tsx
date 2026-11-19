@@ -13,7 +13,7 @@ function LoadingQueue() {
       <p role="status" className="text-sm text-muted">
         Memuat aplikasi...
       </p>
-      <ul className="mt-3 divide-y divide-line rounded-card border border-line bg-surface">
+      <ul className="mt-3 divide-y divide-line rounded-card bg-surface">
         {[0, 1, 2].map((row) => (
           <li key={row} className="flex items-center justify-between gap-4 px-4 py-4">
             <div className="w-full max-w-xs animate-pulse space-y-2">
@@ -85,7 +85,7 @@ export default function QueuePage() {
       </div>
 
       {applications !== null ? (
-        <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-y border-line py-3">
+        <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
           <div>
             <dt className="text-xs font-medium text-muted">Total aplikasi</dt>
             <dd className="text-2xl font-semibold text-ink">{applications.length}</dd>
@@ -108,7 +108,7 @@ export default function QueuePage() {
             <button
               type="button"
               onClick={() => setReloadKey((key) => key + 1)}
-              className="mt-3 inline-flex min-h-11 items-center rounded-control border border-danger-ink bg-surface px-3 text-sm font-semibold text-danger-ink hover:bg-danger-bg"
+              className="mt-3 inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
             >
               Coba lagi
             </button>
@@ -119,7 +119,7 @@ export default function QueuePage() {
           <EmptyState title="Belum ada aplikasi. Mulai dengan Aplikasi Baru.">
             <Link
               href="/new"
-              className="inline-flex min-h-11 items-center rounded-control bg-accent px-3 text-sm font-semibold text-accent-ink hover:bg-accent/90"
+              className="inline-flex min-h-11 items-center rounded-control bg-ink px-3 text-sm font-semibold text-white hover:bg-ink-hover"
             >
               Aplikasi Baru
             </Link>
