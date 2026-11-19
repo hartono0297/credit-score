@@ -219,15 +219,15 @@ export default function NewApplicationPage() {
         Pilih profil demo, isi data pengajuan, dan unggah tiga dokumen.
       </p>
 
-      <form onSubmit={handleExtract} noValidate className="mt-4 space-y-4">
-        <section aria-labelledby="data-title" className="rounded-panel border border-line bg-surface p-4">
-          <h2 id="data-title" className="text-base font-semibold text-ink">
+      <form onSubmit={handleExtract} noValidate className="mt-4 space-y-3 md:mt-6 md:space-y-8">
+        <section aria-labelledby="data-title" className="rounded-card bg-surface p-4 md:rounded-none md:bg-transparent md:p-0">
+          <h2 id="data-title" className="text-[15px] font-semibold leading-snug text-ink">
             Data aplikasi
           </h2>
 
-          <div className="mt-3 grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <label htmlFor="profil" className="block text-sm font-semibold text-ink">
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label htmlFor="profil" className="block text-[13px] font-medium text-ink">
                 Profil demo
               </label>
               <select
@@ -264,7 +264,7 @@ export default function NewApplicationPage() {
                   <button
                     type="button"
                     onClick={() => setProfilesKey((key) => key + 1)}
-                    className="mt-2 inline-flex min-h-11 items-center rounded-control border border-danger-ink bg-surface px-3 text-sm font-semibold text-danger-ink"
+                    className="mt-2 inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-danger-ink hover:bg-surface-muted"
                   >
                     Coba lagi
                   </button>
@@ -291,7 +291,7 @@ export default function NewApplicationPage() {
             </div>
 
             <div>
-              <label htmlFor="produk" className="block text-sm font-semibold text-ink">
+              <label htmlFor="produk" className="block text-[13px] font-medium text-ink">
                 Produk
               </label>
               <select
@@ -305,7 +305,7 @@ export default function NewApplicationPage() {
             </div>
 
             <div>
-              <label htmlFor="plafon" className="block text-sm font-semibold text-ink">
+              <label htmlFor="plafon" className="block text-[13px] font-medium text-ink">
                 Plafon (Rupiah)
               </label>
               <RupiahInput
@@ -333,7 +333,7 @@ export default function NewApplicationPage() {
             </div>
 
             <div>
-              <label htmlFor="tenor" className="block text-sm font-semibold text-ink">
+              <label htmlFor="tenor" className="block text-[13px] font-medium text-ink">
                 Tenor
               </label>
               <select
@@ -365,7 +365,7 @@ export default function NewApplicationPage() {
             </div>
 
             <div>
-              <label htmlFor="dp" className="block text-sm font-semibold text-ink">
+              <label htmlFor="dp" className="block text-[13px] font-medium text-ink">
                 DP (Rupiah)
               </label>
               <RupiahInput
@@ -394,8 +394,8 @@ export default function NewApplicationPage() {
               ) : null}
             </div>
 
-            <div className="sm:col-span-2">
-              <label htmlFor="tujuan" className="block text-sm font-semibold text-ink">
+            <div className="md:col-span-2">
+              <label htmlFor="tujuan" className="block text-[13px] font-medium text-ink">
                 Tujuan (opsional)
               </label>
               <input
@@ -425,8 +425,8 @@ export default function NewApplicationPage() {
           </div>
         </section>
 
-        <section aria-labelledby="dokumen-title" className="rounded-panel border border-line bg-surface p-4">
-          <h2 id="dokumen-title" className="text-base font-semibold text-ink">
+        <section aria-labelledby="dokumen-title" className="rounded-card bg-surface p-4 md:rounded-none md:bg-transparent md:p-0">
+          <h2 id="dokumen-title" className="text-[15px] font-semibold leading-snug text-ink">
             Dokumen
           </h2>
           <p className="mt-1 text-xs text-muted">
@@ -470,12 +470,12 @@ export default function NewApplicationPage() {
               <button
                 type="submit"
                 disabled={!allFilesReady || extracting || profiles === null}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/90 disabled:bg-surface-muted disabled:text-muted"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-ink px-4 text-sm font-semibold text-white hover:bg-ink-hover disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted"
               >
                 {extracting ? (
                   <span
                     aria-hidden="true"
-                    className="h-4 w-4 animate-spin rounded-full border-2 border-accent-ink border-t-transparent"
+                    className="h-4 w-4 animate-spin rounded-full border-2 border-muted border-t-transparent"
                   />
                 ) : null}
                 {extracting
@@ -501,14 +501,14 @@ export default function NewApplicationPage() {
         </section>
 
         {formError ? (
-          <div role="alert" className="rounded-card border border-danger-ink bg-danger-bg p-3">
+          <div role="alert" className="rounded-control bg-danger-bg p-3">
             <p className="text-sm font-semibold text-danger-ink">{formError}</p>
           </div>
         ) : null}
 
         {application?.extraction ? (
-          <section aria-labelledby="ekstraksi-title" className="rounded-panel border border-line bg-surface p-4">
-            <h2 id="ekstraksi-title" className="text-base font-semibold text-ink">
+          <section aria-labelledby="ekstraksi-title" className="rounded-card bg-surface p-4 md:rounded-none md:bg-transparent md:p-0">
+            <h2 id="ekstraksi-title" className="text-[15px] font-semibold leading-snug text-ink">
               Hasil ekstraksi
             </h2>
             <p className="mt-1 text-xs text-muted">
@@ -530,7 +530,7 @@ export default function NewApplicationPage() {
               type="button"
               onClick={() => void handleScore()}
               disabled={calculating}
-              className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-control bg-accent px-4 text-sm font-semibold text-accent-ink hover:bg-accent/90 disabled:bg-surface-muted disabled:text-muted sm:w-auto"
+              className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-control bg-ink px-4 text-sm font-semibold text-white hover:bg-ink-hover disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted md:w-auto"
             >
               {calculating ? "Menghitung skor..." : "Hitung Skor"}
             </button>

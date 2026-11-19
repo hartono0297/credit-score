@@ -45,6 +45,7 @@ export function UploadSlot({
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const previewRef = useRef<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(
     () => () => {
@@ -86,24 +87,36 @@ export function UploadSlot({
   const describedBy = error ? `${hintId} ${errorId}` : hintId;
 
   return (
-    <div className="rounded-card border border-line bg-surface p-3">
-      <label htmlFor={inputId} className="block text-sm font-semibold text-ink">
+    <div className="rounded-control border border-dashed border-line-strong bg-surface p-3">
+      <label htmlFor={inputId} className="block text-[13px] font-medium text-ink">
         {label}
       </label>
       <p id={hintId} className="mt-0.5 text-xs text-muted">
         {description}
       </p>
       <input
+        ref={inputRef}
         id={inputId}
         name={`dokumen-${documentType}`}
         type="file"
         accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
         onChange={handleChange}
         disabled={disabled}
+        tabIndex={-1}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className="mt-2 block w-full text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-control file:border file:border-line-strong file:bg-surface file:px-3 file:py-2.5 file:text-sm file:font-semibold file:text-accent hover:file:bg-accent-soft disabled:file:bg-surface-muted disabled:file:text-muted"
+        className="sr-only"
       />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={disabled}
+        aria-label={`${file ? "Ganti" : "Pilih file"} ${label}`}
+        aria-describedby={describedBy}
+        className="mt-2 inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted"
+      >
+        {file ? "Ganti" : "Pilih file"}
+      </button>
 
       {file ? (
         <div className="mt-3 flex items-center gap-3">
