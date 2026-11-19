@@ -3,11 +3,11 @@
 
 | Item | Keterangan |
 |---|---|
-| Nama Proyek | AI Credit Scoring Assistant (nama kerja, branding TBD) |
-| Versi Dokumen | 0.5 — scope backend minimal + PWA + QA submission |
-| Tanggal | 17 November 2026 |
-| Status | Draft untuk implementasi |
-| Pemilik Bisnis | TBD |
+| Nama Proyek | AI Credit Scoring Assistant (nama kerja; branding belum ditetapkan, lihat OQ-02) |
+| Versi Dokumen | 0.6 |
+| Tanggal | 19 November 2026 |
+| Status | Diimplementasikan sebagai demo |
+| Pemilik Bisnis | Belum ditetapkan |
 
 ### Riwayat Revisi
 
@@ -18,6 +18,7 @@
 | 0.3 | 16-11-2026 | Menambahkan diagram alur bisnis: overview proses, swimlane, guardrail/keputusan, dan siklus status |
 | 0.4 | 16-11-2026 | Selaraskan cakupan tiga layar, rekomendasi grade C, ID guardrail, field mutasi, dan transisi perubahan keputusan dengan PRD v0.3 |
 | 0.5 | 17-11-2026 | Tambah backend minimal (route handlers + file JSON), PWA installable, dan deliverable QA/presentasi untuk submission |
+| 0.6 | 19-11-2026 | Selaraskan dengan implementasi: transisi status setelah koreksi, teks rekomendasi, profil demo, dan bagian Dokumen di detail |
 
 ---
 
@@ -65,8 +66,6 @@ Ini **demo singkat**, bukan produk. Tujuan: menunjukkan alur review dan nilai ex
 - Aplikasi mobile native/PWA terpisah; yang dibangun hanya PWA dari web app.
 - Training model, MLOps, monitoring produksi.
 - Data nyata atau data pribadi.
-
-> Mobile: PWA installable di browser. Aplikasi mobile native terpisah tidak dibangun pada demo ini.
 
 ---
 
@@ -173,6 +172,8 @@ stateDiagram-v2
     [*] --> Draft: Aplikasi baru dibuat
     Draft --> Scored: Skor selesai, tanpa guardrail
     Draft --> ManualReview: Skor selesai, guardrail aktif
+    Scored --> ManualReview: Koreksi analyst memicu guardrail
+    ManualReview --> Scored: Koreksi analyst menghapus guardrail
     Scored --> Approved: Approve + reason code
     Scored --> Rejected: Reject + reason code
     ManualReview --> Approved: Approve + reason code
@@ -183,7 +184,7 @@ stateDiagram-v2
     Rejected --> [*]
 ```
 
-Status dan transisi mengikuti PRD §8.1 dan §13. Perubahan keputusan menambah entri log tanpa menghapus entri sebelumnya. Diagram hanya merangkum transisi yang didukung demo.
+Status dan transisi mengikuti PRD §8.1 dan §13. Koreksi ekstraksi menghitung ulang skor selama aplikasi belum Approved atau Rejected; setelah keputusan final, koreksi ditolak. Perubahan keputusan, termasuk mencatat ulang keputusan yang sama, menambah entri log tanpa menghapus entri sebelumnya. Diagram hanya merangkum transisi yang didukung demo.
 
 ---
 
@@ -221,7 +222,7 @@ Form data pengajuan dan tiga slot upload dokumen, dilanjutkan ekstraksi simulasi
 ### 7.3 Detail Aplikasi
 Satu halaman dengan bagian:
 - **Ringkasan** — skor, grade, rekomendasi, status guardrail.
-- **Dokumen** — preview upload, hasil ekstraksi + confidence.
+- **Dokumen** — nama file yang diunggah, hasil ekstraksi + confidence.
 - **SLIK** — ringkasan fasilitas dan kolektibilitas.
 - **Faktor Risiko** — kontribusi faktor + narasi.
 - **Keputusan** — Approve/Reject, reason code, catatan.
@@ -246,9 +247,9 @@ Satu halaman dengan bagian:
 | Rentang | Grade | Rekomendasi |
 |---|---|---|
 | 800–1000 | A | Approve, plafon sesuai pengajuan |
-| 700–799 | B | Approve, plafon maks 80% |
-| 600–699 | C | Manual review, plafon maks 50% |
-| 500–599 | D | Manual review / approve bersyarat |
+| 700–799 | B | Approve, plafon maks 80% pengajuan |
+| 600–699 | C | Manual review, plafon maks 50% pengajuan |
+| 500–599 | D | Manual review atau approve bersyarat |
 | < 500 | E | Rekomendasi reject |
 
 Model: scorecard berbobot tetap (aditif), sehingga kontribusi tiap faktor dapat ditampilkan tanpa library tambahan. Bobot bersifat demo.
@@ -265,14 +266,14 @@ Model: scorecard berbobot tetap (aditif), sehingga kontribusi tiap faktor dapat 
 
 ## 9. Data Demo
 
-Lima profil di penyimpanan server lokal:
+Lima profil sintetis yang tertanam di seed aplikasi (`02_source/lib/seed.ts`):
 
 | ID | Profil | Grade | Kasus |
 |---|---|---|---|
 | C-01 | Karyawan tetap, riwayat bersih | A | Happy path |
 | C-02 | Karyawan tetap, DTI moderat | B | Approve limit disesuaikan |
-| C-03 | Freelancer, income fluktuatif | C | Stabilitas income |
-| C-04 | Telat 30 hari, beberapa lender | D | Delinquency ringan |
+| C-03 | Karyawan, income dan slip-mutasi fluktuatif | C | Stabilitas income |
+| C-04 | Telat 2 kali dalam 12 bulan, dua lender | D | Delinquency ringan |
 | C-05 | Kolektibilitas 3 | E | Guardrail |
 
 Field ekstraksi:

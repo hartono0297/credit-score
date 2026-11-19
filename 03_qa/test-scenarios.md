@@ -5,7 +5,7 @@
 |---|---|
 | Versi | 1.0 |
 | Tanggal eksekusi | 18 November 2026 |
-| Branch | `plan/04-qa` |
+| Commit acuan | `0d642cd` (eksekusi awal), diperbarui pada perbaikan berikutnya |
 | Lingkungan | Windows 11, Node 22.14.0, Chrome 156.0.8078.82 |
 | Perintah utama | `cd 02_source && npm run verify && npm run test:unit && npm run test:e2e` |
 
@@ -22,10 +22,10 @@ Status yang dipakai: `Lulus`, `Lulus (parsial)`, `Tidak diuji`, `Tidak diukur`.
 | FT-03 | US-02 | Unggah 3 dokumen lalu submit dengan field kosong | Pesan validasi per field, fokus ke error pertama | Lulus | E2E `US-02`; pesan profil, plafon, tenor, dan DP; fokus pindah ke select profil |
 | FT-04 | US-02 | Isi plafon 4 juta dan 60 juta | Ditolak dengan pesan rentang 5 sampai 50 juta | Lulus | E2E `US-02`; pesan rentang tampil untuk kedua nilai |
 | FT-05 | US-02 | Unggah `.txt` dan file 10 MB + 1 byte | Slot menolak file dengan pesan error | Lulus | E2E `US-02` dan `SC-03`; pesan format dan ukuran tampil; tombol Ekstrak tetap nonaktif |
-| FT-06 | US-02 | Belum ada 3 dokumen | Tombol Ekstrak Dokumen nonaktif | Lulus | E2E `SC-03`; tombol nonaktif sebelum dan sesudah file tidak valid |
+| FT-06 | US-02 | Belum ada 3 dokumen; profil kosong saat submit | Tombol Ekstrak nonaktif sebelum 3 dokumen; tanpa profil muncul `Pilih profil demo.` | Lulus | E2E `SC-03` (tombol nonaktif sebelum dan sesudah file tidak valid) dan `US-02` (pesan `Pilih profil demo.`) |
 | FT-07 | US-02 | Lengkapi form dan 3 dokumen, klik Ekstrak | Loading sekitar 1,5 detik, lalu field dan confidence tampil | Lulus (parsial) | E2E `SC-03`; hasil tampil dalam rentang 1,3 sampai 10 detik, batas ketat 1,5 plus minus 0,3 detik tidak diukur |
 | FT-08 | US-03 | Periksa Cicilan Terdeteksi pada C-03 | Confidence 78 persen, label Perlu verifikasi | Lulus | E2E `SC-03`; teks `78%` dan `Perlu verifikasi` tampil |
-| FT-09 | SC-03 | Ubah field lalu klik Hitung Skor | Skor dan faktor berubah, field ditandai hasil koreksi | Lulus (koreksi THP) | E2E `SC-03`; THP 12.000.000 menghasilkan skor 720 dan label `Hasil koreksi analyst`; koreksi cicilan dan inflow diuji di unit test |
+| FT-09 | SC-03 | Ubah field lalu klik Hitung Skor | Skor dan faktor berubah, field ditandai hasil koreksi | Lulus | E2E `SC-03`; THP 12.000.000 menghasilkan skor 720 dan label `Hasil koreksi analyst`; koreksi cicilan dan inflow diuji di unit test |
 | FT-10 | US-04, SC-04 | Proses C-01 dari nol | Skor 1000, grade A, rekomendasi approve sesuai pengajuan | Lulus | E2E `SC-04`; skor 1000, `A, Sangat baik`, rekomendasi sesuai pengajuan |
 | FT-11 | US-05 | Buka detail setelah skor tersedia | 5 faktor dengan poin, arah, dan narasi | Lulus | E2E `SC-04`; 5 label arah `menaikkan skor`, label faktor, poin `+120`, narasi tampil |
 | FT-12 | US-06, SC-02 | Buka C-05 | Status Manual Review, banner GR-01 dan GR-02 | Lulus | E2E `SC-02`; skor 215, grade E, kedua guardrail dan alasannya tampil |
@@ -40,7 +40,7 @@ Status yang dipakai: `Lulus`, `Lulus (parsial)`, `Tidak diuji`, `Tidak diukur`.
 | FT-21 | NFR-03 | Viewport 390px | Queue berupa kartu, tanpa horizontal scroll | Lulus | E2E viewport; kartu queue tampil, `scrollWidth` tidak melebihi lebar layar |
 | FT-22 | NFR-03 | Viewport 768px dan 1440px | Layout stabil, tabel dan detail terbaca | Lulus | E2E viewport untuk queue, detail C-04, detail C-05, dan form baru |
 | FT-23 | A11y | Navigasi keyboard dan Escape | Semua kontrol terjangkau, focus ring terlihat | Tidak diuji | Locator berbasis role dan label lulus; traversal keyboard manual belum dijalankan |
-| FT-24 | Error state | Hentikan server lalu lakukan aksi | Pesan error tampil, data tidak berubah | Tidak diuji | Di luar cakupan otomasi sesi ini |
+| FT-24 | Error state | Hentikan server lalu lakukan aksi | Pesan error tampil, data tidak berubah | Tidak diuji | Di luar cakupan otomasi |
 | FT-25 | US-08 | Buka semua halaman | Label Demo Mode terlihat | Lulus | E2E tiga halaman; banner `Demo Mode: data simulasi` tampil |
 
 ---
@@ -121,4 +121,4 @@ Catatan: pengukuran dilakukan pada dev server di drive D. Next.js menampilkan pe
 - E2E memakai Chrome terpasang melalui `channel: chrome`, bukan browser unduhan Playwright.
 - Setiap test E2E diawali `POST /api/reset`.
 - Artefak kegagalan ditulis ke `03_qa/automated/test-results/` dan tidak di-commit.
-- Pada satu run penuh, API keputusan C-05 pernah mengembalikan 500. Kejadian tidak berulang pada run terisolasi maupun run penuh berikutnya. Sisa file `db.json.*.tmp` menunjukkan kegagalan rename sementara di Windows. Detail ada di `qa-report.md`.
+- Pada satu run penuh, API keputusan C-05 pernah mengembalikan 500 karena rename file sementara gagal di Windows. Sudah diperbaiki (QD-03): store mengulang rename hingga empat kali. Detail ada di `qa-report.md`.

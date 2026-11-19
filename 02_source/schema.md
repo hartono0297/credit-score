@@ -58,7 +58,7 @@ type ExtractedField<T> = { value: T; confidence: number; edited?: boolean };
 | `slipGaji` | `employer`, `thp`, `masaKerjaBulan` | Profil demo |
 | `mutasi` | `rataRataSaldo`, `inflowBulanan`, `cicilanTerdeteksi` | Profil demo |
 
-- Confidence statis 0,78 sampai 0,97. `mutasi.cicilanTerdeteksi` selalu 0,78 untuk demo koreksi.
+- Confidence statis 0,78 sampai 0,96, ditetapkan di `lib/extraction.ts`. `mutasi.cicilanTerdeteksi` selalu 0,78 untuk demo koreksi.
 - Field dengan confidence di bawah 0,80 ditandai `Perlu verifikasi`.
 - Koreksi analyst mengubah `value` dan menambah `edited: true`. Hanya `thp`, `cicilanTerdeteksi`, dan `inflowBulanan` yang memengaruhi skor.
 - Nilai efektif: koreksi bila ada, jika tidak nilai profil. `salaryGap` efektif dihitung `abs(thp - inflow) / thp`.

@@ -3,10 +3,10 @@
 
 | Item | Keterangan |
 |---|---|
-| Versi | 1.0 |
-| Tanggal | 17 November 2026 |
+| Versi | 1.1 |
+| Tanggal | 19 November 2026 |
 | Mengacu pada | BRD v0.5, PRD v0.4, TRD v0.3 |
-| Lingkungan | Lokal, Node 24, browser Chromium |
+| Lingkungan | Lokal, Node 20.9 atau lebih baru (dieksekusi pada Node 22.14.0), Google Chrome lewat Playwright |
 
 ---
 
@@ -43,9 +43,9 @@ Demo berjalan lokal tanpa autentikasi, database, atau data nyata. Penetration te
 | Item | Nilai |
 |---|---|
 | OS | Windows 11 |
-| Node | 24.x |
+| Node | 20.9 atau lebih baru (dieksekusi pada 22.14.0) |
 | Runtime | `cd 02_source && npm run dev` |
-| Browser | Chromium (Playwright) |
+| Browser | Google Chrome terpasang, Playwright `channel: "chrome"` |
 | Data | Seed 5 profil, reset sebelum setiap siklus E2E |
 | Akun | Tanpa login |
 | Jaringan | Localhost |
@@ -94,17 +94,17 @@ Skenario manual dan otomatis mengikuti tabel di bagian 5. Setiap skenario meruju
 | FT-03 | US-02 | Buka `/new`, submit kosong | Pesan validasi per field, fokus ke error pertama |
 | FT-04 | US-02 | Isi plafon 4 juta atau 60 juta | Ditolak dengan pesan rentang 5 sampai 50 juta |
 | FT-05 | US-02 | Upload file `.txt` atau 11 MB | Slot menolak file dengan pesan error |
-| FT-06 | US-02 | Belum pilih profil atau belum 3 dokumen | Tombol Ekstrak Dokumen nonaktif |
+| FT-06 | US-02 | Belum 3 dokumen; atau profil belum dipilih lalu klik Ekstrak | Tombol Ekstrak nonaktif sebelum 3 dokumen lengkap; tanpa profil muncul pesan `Pilih profil demo.` |
 | FT-07 | US-02 | Lengkapi form dan 3 dokumen, klik Ekstrak | Loading 1,5 detik, lalu field + confidence tampil |
 | FT-08 | US-03 | Periksa field Cicilan Terdeteksi pada C-03 | Confidence 78 persen, chip kuning, label Perlu verifikasi |
-| FT-09 | SC-03 | Ubah cicilan C-03, klik Hitung Skor | Skor dan faktor berubah; field ditandai hasil koreksi |
+| FT-09 | SC-03 | Ubah THP C-03, klik Hitung Skor | Skor dan faktor berubah; field ditandai hasil koreksi |
 | FT-10 | US-04, SC-04 | Proses C-01 | Skor 1000, grade A, rekomendasi approve sesuai pengajuan |
 | FT-11 | US-05 | Buka detail C-03 | 5 faktor dengan poin, arah, dan narasi tampil |
 | FT-12 | US-06, SC-02 | Buka C-05 | Status Manual Review, banner GR-01 dan GR-02 |
-| FT-13 | US-07 | Approve tanpa reason code | Tidak dapat disimpan, pesan wajib reason code |
+| FT-13 | US-07 | Reject tanpa reason code | Tidak dapat disimpan, pesan wajib reason code |
 | FT-14 | US-07 | Reject C-05 tanpa catatan | Tidak dapat disimpan, catatan wajib saat guardrail |
 | FT-15 | US-07 | Simpan keputusan C-02 | Status berubah, entri log bertambah |
-| FT-16 | PRD 13 | Ubah keputusan C-02 | Entri log baru ditambahkan, entri lama tetap ada |
+| FT-16 | PRD 13 | Ubah keputusan C-05 | Entri log baru ditambahkan, entri lama tetap ada |
 | FT-17 | PRD 16 | Reset Demo | Data kembali ke 5 seed dan status awal |
 | FT-18 | PRD 16 | Buka `/application?id=TIDAK-ADA` | Empty state dengan tautan kembali ke queue |
 | FT-19 | NFR | Refresh setelah keputusan | Status dan log tetap tersimpan |
@@ -158,7 +158,7 @@ Setiap defect dicatat di QA report dengan ID, langkah reproduksi, severity, dan 
 
 ### 8.2 Exit
 
-- Semua FT dengan prioritas Must lulus.
+- Semua FT berstatus Lulus, atau keterbatasannya dicatat di QA report.
 - Tidak ada defect Critical atau High terbuka.
 - Unit test, verify, dan E2E lulus.
 - Performance target terukur atau ditandai "not measured".
@@ -179,7 +179,7 @@ Setiap defect dicatat di QA report dengan ID, langkah reproduksi, severity, dan 
 
 ## 10. Risiko dan batasan
 
-- PWA bukan aplikasi mobile native. Interpretasi ini dicatat untuk penilai.
+- PWA bukan aplikasi mobile native. Interpretasi ini dicatat di QA report.
 - Tanpa login, sehingga uji otorisasi tidak berlaku.
 - Data sintetis, sehingga hasil tidak menggambarkan performa model nyata.
 - Performance diukur di lokal, bukan di jaringan produksi.

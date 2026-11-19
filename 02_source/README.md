@@ -6,7 +6,7 @@ Dokumen sumber ada di `../01_documents/`. Kontrak data runtime ada di `schema.md
 
 ## Prasyarat
 
-- Node.js 20 atau lebih baru (diuji pada Node 22.14.0).
+- Node.js 20.9 atau lebih baru (diuji pada Node 22.14.0).
 - npm.
 
 ## Menjalankan
@@ -49,7 +49,9 @@ Buka `http://localhost:3000`.
 | `lib/seed.ts` | Lima profil dan lima aplikasi awal. |
 | `lib/validation.ts` | Validasi form, keputusan, dan upload. |
 | `lib/format.ts` | Format Rupiah, persen, skor, dan waktu. |
+| `lib/api-client.ts` | Pemanggil API lokal untuk komponen client. |
 | `lib/server/store.ts` | Baca/tulis JSON server dengan tulis atomik dan antrean mutasi. |
+| `lib/server/http.ts` | Helper respons error JSON untuk route handler. |
 | `scripts/verify-scores.ts` | Pemeriksaan skor dan invariant seed. |
 
 ## Catatan
