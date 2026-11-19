@@ -83,7 +83,7 @@ export function AppHeader() {
                 disabled={resetting}
                 className="inline-flex min-h-11 items-center rounded-control bg-danger-ink px-3 text-sm font-semibold text-white hover:bg-danger-ink/90 disabled:bg-surface-muted disabled:text-muted"
               >
-                {resetting ? "Meriset data..." : "Ya, reset demo"}
+                {resetting ? "Mereset data..." : "Ya, reset demo"}
               </button>
               <button
                 type="button"

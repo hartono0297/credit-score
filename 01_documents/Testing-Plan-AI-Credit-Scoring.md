@@ -5,7 +5,7 @@
 |---|---|
 | Versi | 1.1 |
 | Tanggal | 19 November 2026 |
-| Mengacu pada | BRD v0.5, PRD v0.4, TRD v0.3 |
+| Mengacu pada | BRD v0.6, PRD v0.5, TRD v0.4 |
 | Lingkungan | Lokal, Node 20.9 atau lebih baru (dieksekusi pada Node 22.14.0), Google Chrome lewat Playwright |
 
 ---

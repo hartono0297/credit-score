@@ -29,7 +29,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Keep API responses network-only so decisions are never served from cache.
+  // Respons API selalu dari jaringan agar keputusan tidak pernah disajikan dari cache.
   if (url.pathname.startsWith("/api/")) return;
 
   if (request.mode === "navigate") {

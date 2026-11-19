@@ -1,5 +1,6 @@
 import { formatDecimal } from "@/lib/format";
 
+// Sama dengan lib/extraction; disalin agar logika ekstraksi tidak ikut ke bundle client.
 const LOW_CONFIDENCE_THRESHOLD = 0.8;
 
 export function ConfidenceChip({ confidence }: { confidence: number }) {

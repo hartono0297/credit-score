@@ -3,7 +3,7 @@
 
 | Item | Keterangan |
 |---|---|
-| Versi | 2.0 |
+| Versi | 2.1 |
 | Tanggal | 19 November 2026 |
 | Mengacu pada | PRD v0.4. Dokumen ini adalah acuan visual tunggal untuk v2.0. PNG di `01_documents/mockups/` adalah tangkapan layar implementasi v2.0 |
 | Mode antislop | During |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 1.0 | 17-11-2026 | Arah ledger cetak: latar kertas, panel bergaris, aksen teal |
 | 2.0 | 19-11-2026 | Redesign minimalis: kanvas putih tanpa panel di desktop, kartu di mobile, font Plus Jakarta Sans, skala skor sebagai motif, tombol utama hitam |
+| 2.1 | 19-11-2026 | `--line-strong` menjadi `#8f9194` agar batas input dan tombol outline mencapai kontras non-teks 3:1; `--grade-c` menjadi `#946600` agar tetap 4.5:1 di baris Manual Review |
 
 ---
 
@@ -65,13 +66,13 @@ Jika logo dan nama produk diganti, tampilan tetap terbaca sebagai meja kerja kre
 --ink-hover: #2c2e31;
 --muted: #5c6066;
 --line: #ececea;
---line-strong: #d9d9d6;
+--line-strong: #8f9194;
 --accent: #0e5b58;
 --accent-soft: #e3efed;
 
 --grade-a: #13743a;
 --grade-b: #3f7d20;
---grade-c: #9a6a00;
+--grade-c: #946600;
 --grade-d: #b4540a;
 --grade-e: #a12622;
 

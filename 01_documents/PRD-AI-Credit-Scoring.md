@@ -3,11 +3,11 @@
 
 | Item | Keterangan |
 |---|---|
-| Versi | 0.4 |
-| Tanggal | 17 November 2026 |
-| Status | Draft untuk implementasi |
-| Mengacu pada | BRD v0.5 (backend minimal dan PWA) |
-| Pemilik | TBD |
+| Versi | 0.5 |
+| Tanggal | 19 November 2026 |
+| Status | Diimplementasikan sebagai demo |
+| Mengacu pada | BRD v0.6 |
+| Pemilik | Belum ditetapkan |
 
 ### Riwayat Revisi
 
@@ -17,6 +17,7 @@
 | 0.2 | Tambah User Scenario, User Journey, dan Mockup UI/UX; selaraskan persistensi localStorage |
 | 0.3 | Selaraskan rujukan BRD v0.4, skema contoh dengan model TRD, dan narasi faktor dengan aturan §12.5 |
 | 0.4 | Persistensi pindah ke API server (file JSON), tambah PWA installable dan deliverable QA |
+| 0.5 | 19-11-2026: selaraskan dengan implementasi (alur ekstraksi, narasi, rekomendasi, validasi profil, desain v2) |
 
 ---
 
@@ -95,7 +96,7 @@ Satu aplikasi web untuk analyst BNPL yang menampilkan hasil review kredit: skor,
 **Profil:** C-01 (skor 1000, grade A).
 
 - **Given** analyst berada di queue.
-- **When** analyst membuat aplikasi baru, memilih C-01, mengunggah 3 dokumen, mengekstrak, dan menghitung skor.
+- **When** analyst membuat aplikasi baru, memilih C-01 dengan plafon Rp 20.000.000 dan tenor 12 bulan, mengunggah 3 dokumen, mengekstrak, dan menghitung skor.
 - **Then** skor 1000 (A) tampil dengan rekomendasi approve sesuai pengajuan, dan keputusan dapat disimpan.
 
 **Yang dibuktikan:** alur end-to-end berjalan tanpa langkah manual di luar aplikasi.
@@ -134,7 +135,7 @@ Perjalanan analyst dalam satu siklus review:
 
 ## 6. Scope
 
-Mengikuti BRD v0.4. Ringkasnya:
+Mengikuti BRD v0.6. Ringkasnya:
 
 **Ada:** queue, aplikasi baru, upload + ekstraksi simulasi, SLIK simulasi, skor + faktor + guardrail, keputusan + log, 5 profil dummy, responsive.
 
@@ -149,8 +150,8 @@ Mengikuti BRD v0.4. Ringkasnya:
 1. Queue → klik **Aplikasi Baru**.
 2. Isi produk, plafon, tenor, DP, tujuan; pilih **Profil Demo** (C-01 s/d C-05).
 3. Upload KTP, slip gaji, mutasi rekening.
-4. Klik **Ekstrak Dokumen** → loading ±1,5 detik → field hasil ekstraksi + confidence dari API.
-5. Analyst memeriksa dan mengoreksi field bila perlu → **Hitung Skor** (dihitung di server).
+4. Klik **Ekstrak Dokumen** → loading ±1,5 detik → server mengekstrak, menghitung skor, dan menetapkan status Scored atau Manual Review; field hasil ekstraksi + confidence tampil.
+5. Analyst memeriksa dan mengoreksi field bila perlu → **Hitung Skor** menyimpan koreksi (skor dihitung ulang di server) lalu membuka Detail.
 6. Halaman Detail terbuka: skor, grade, rekomendasi, faktor, SLIK.
 7. Pilih **Approve** atau **Reject**, pilih reason code, isi catatan (opsional) → **Simpan Keputusan**.
 8. Status di queue berubah; log keputusan tercatat.
@@ -332,7 +333,7 @@ Catatan:
   "tenor": 12,
   "dp": 1500000,
   "purpose": "Renovasi rumah",
-  "status": "Draft",
+  "status": "Scored",
   "documents": [
     { "type": "KTP", "fileName": "ktp.jpg" },
     { "type": "SLIP_GAJI", "fileName": "slip.pdf" },
@@ -359,7 +360,7 @@ Catatan:
 }
 ```
 
-Field `cicilanTerdeteksi` memakai confidence 0,78 agar kasus koreksi pada SC-03 dapat didemokan. SLIK tidak disalin ke data aplikasi; layar Detail menampilkannya dari profil demo melalui `profileId`.
+Field `score` tidak ditampilkan agar contoh ringkas. Field `cicilanTerdeteksi` memakai confidence 0,78 agar kasus koreksi pada SC-03 dapat didemokan. SLIK tidak disalin ke data aplikasi; layar Detail menampilkannya dari profil demo melalui `profileId`.
 
 ### 11.3 Mapping Ekstraksi
 
@@ -425,8 +426,8 @@ Upload berfungsi untuk alur dan preview; nilai diambil dari profil demo, bukan d
 |---|---|---|
 | 800–1000 | A | Approve, plafon sesuai pengajuan |
 | 700–799 | B | Approve, plafon maks 80% pengajuan |
-| 600–699 | C | Manual review, plafon maks 50% |
-| 500–599 | D | Manual review / approve bersyarat |
+| 600–699 | C | Manual review, plafon maks 50% pengajuan |
+| 500–599 | D | Manual review atau approve bersyarat |
 | < 500 | E | Rekomendasi reject |
 
 ### 12.4 Guardrail
@@ -441,9 +442,13 @@ Upload berfungsi untuk alur dan preview; nilai diambil dari profil demo, bukan d
 
 - Tampilkan 5 faktor dengan kontribusi terbesar (nilai absolut).
 - Setiap faktor: nama, poin, arah (menaikkan/menurunkan), satu kalimat penjelasan.
-- Narasi ringkasan: sebut grade, 2 faktor dominan, dan rekomendasi. Contoh:
+- Narasi ringkasan: skor dan grade, faktor dengan poin positif terbesar, faktor dengan poin negatif terbesar (dari keenam faktor), lalu rekomendasi. Setiap faktor disebut lewat kalimat detailnya.
+- Jika hanya ada faktor positif atau hanya faktor negatif, narasi memuat satu klausa saja.
+- Kalimat rekomendasi ditulis `Rekomendasi: {rekomendasi}.`, kecuali grade E yang berbunyi `Rekomendasi reject.`
 
-> Skor 615 (Grade C). Kolektibilitas lancar menaikkan skor (+100), namun selisih slip-mutasi 28% menurunkan skor (−45). Rekomendasi: manual review dengan plafon maksimum 50%.
+Contoh (C-03):
+
+> Skor 615 (Grade C). Kolektibilitas terburuk 1 (lancar) menaikkan skor (+100), namun selisih slip-mutasi 28,0% menurunkan skor (-45). Rekomendasi: Manual review, plafon maks 50% pengajuan.
 
 ---
 
@@ -499,7 +504,7 @@ Upload berfungsi untuk alur dan preview; nilai diambil dari profil demo, bukan d
 | Refresh halaman | Data tetap tersimpan di server |
 | Reset Demo / file data dihapus | Data kembali ke seed |
 | Server/API tidak berjalan | Pesan error di layar, data tidak berubah |
-| Profil demo belum dipilih | Tombol ekstrak nonaktif |
+| Profil demo belum dipilih | Pesan `Pilih profil demo.` saat Ekstrak Dokumen diklik |
 
 ---
 
@@ -542,6 +547,17 @@ Upload berfungsi untuk alur dan preview; nilai diambil dari profil demo, bukan d
 
 ---
 
+## 20. Deliverable
+
+| Folder | Isi |
+|---|---|
+| `01_documents/` | BRD, PRD, TRD, Testing Plan, DESIGN.md, mockup |
+| `02_source/` | Source Next.js, dependency files, schema, seed sintetis |
+| `03_qa/` | Test scenario, automated tests, QA report |
+| `04_presentation/` | Presentasi final (.pptx) |
+
+---
+
 ## Lampiran — Glosarium
 
 | Istilah | Definisi |
@@ -553,14 +569,3 @@ Upload berfungsi untuk alur dan preview; nilai diambil dari profil demo, bukan d
 | SLIK | Sistem Layanan Informasi Keuangan |
 | Guardrail | Aturan kebijakan yang memaksa manual review |
 | PWA | Progressive Web App; web app installable |
-
----
-
-## 20. Deliverable Submission
-
-| Folder | Isi |
-|---|---|
-| `01_documents/` | BRD, PRD, TRD, Testing Plan, DESIGN.md, mockup |
-| `02_source/` | Source Next.js, dependency files, schema, seed sintetis |
-| `03_qa/` | Test scenario, automated tests, QA report |
-| `04_presentation/` | Presentasi final (.pptx) |

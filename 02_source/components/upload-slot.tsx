@@ -15,7 +15,7 @@ function extensionOf(name: string): string {
 function validateFile(file: File): string | null {
   if (file.size > MAX_UPLOAD_BYTES) return "Ukuran file maksimal 10 MB.";
   if (UPLOAD_TYPES.includes(file.type as (typeof UPLOAD_TYPES)[number])) return null;
-  // Some browsers and test runners leave MIME empty, so the extension is the fallback.
+  // Sebagian browser dan test runner mengosongkan MIME, jadi ekstensi dipakai sebagai cadangan.
   if (EXTENSIONS.includes(extensionOf(file.name))) return null;
   return "Format file harus JPG, PNG, atau PDF.";
 }

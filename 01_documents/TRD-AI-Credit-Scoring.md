@@ -3,10 +3,10 @@
 
 | Item | Keterangan |
 |---|---|
-| Versi | 0.3 |
-| Tanggal | 17 November 2026 |
-| Status | Draft untuk implementasi |
-| Mengacu pada | PRD v0.4, BRD v0.5 |
+| Versi | 0.4 |
+| Tanggal | 19 November 2026 |
+| Status | Diimplementasikan sebagai demo |
+| Mengacu pada | PRD v0.5, BRD v0.6 |
 | Target | Demo lokal (server Next.js), PWA installable |
 
 ### Riwayat Revisi
@@ -16,6 +16,7 @@
 | 0.1 | 16-11-2026 | Draft awal |
 | 0.2 | 16-11-2026 | Selaraskan rujukan dokumen, model SLIK, dan gap slip-mutasi efektif; catat status versi paket |
 | 0.3 | 17-11-2026 | Backend minimal (route handlers + file JSON), PWA, struktur submission 01-04, QA otomatis |
+| 0.4 | 19-11-2026 | Selaraskan dengan implementasi: alur ekstraksi dan API, narasi, urutan faktor, struktur proyek, validasi, PWA, versi paket |
 
 ---
 
@@ -68,7 +69,7 @@ Tidak ada database eksternal, autentikasi, atau panggilan jaringan eksternal saa
 
 | Keputusan | Alasan |
 |---|---|
-| Backend minimal di Next.js (route handlers) | Submission meminta backend source; tetap satu aplikasi dan tanpa service terpisah |
+| Backend minimal di Next.js (route handlers) | Demo membutuhkan source backend; tetap satu aplikasi dan tanpa service terpisah |
 | File JSON sebagai persistensi server | Data bertahan saat refresh; tanpa database dan tanpa dependensi native |
 | Scoring sebagai fungsi murni TypeScript | Deterministik, mudah diverifikasi, tanpa ML library |
 | Mode server lokal (`next dev`/`next start`), tanpa static export | Route handler membutuhkan server; demo berjalan lokal |
@@ -86,16 +87,18 @@ Tidak ada database eksternal, autentikasi, atau panggilan jaringan eksternal saa
 
 | Kategori | Pilihan |
 |---|---|
-| Framework | Next.js (App Router) + React 19 + TypeScript |
+| Framework | Next.js 16.4.6 (App Router) + React 19.3 + TypeScript 5 |
 | Styling | Tailwind CSS v4 |
 | Backend | Next.js route handlers |
 | Persistensi | File JSON di `02_source/data/db.json` |
 | PWA | Manifest + service worker manual |
 | Dev tool | `tsx` (skrip verifikasi/unit test) |
 | QA | Node test runner + `@playwright/test` |
-| Node | ≥ 20 (lingkungan saat ini: 24) |
+| Node | ≥ 20.9 (diuji pada 22.14.0) |
 
-Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Versi paket dikunci saat scaffold dan mengikuti `create-next-app` terbaru.
+Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Next.js, React, dan Tailwind memakai versi pasti; dev tool lain memakai rentang caret, dan versi terpasang tercatat di `package-lock.json`.
+
+`next.config.ts` mengaktifkan `cacheComponents` dan `partialPrefetching`, serta mengirim header keamanan `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, dan `X-Frame-Options: DENY` di semua route.
 
 ---
 
@@ -114,18 +117,17 @@ Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Versi paket dik
   package.json
   next.config.ts
   tsconfig.json
-  postcss.config.mjs
+  eslint.config.mjs
   schema.md                  kontrak data JSON + invariant
   data/                      db.json (runtime, seed bila kosong)
   public/
-    manifest.webmanifest
     sw.js
     icons/
   app/
     layout.tsx               root layout + font
     page.tsx                 Queue
     new/page.tsx             Form aplikasi baru
-    application/page.tsx     Detail (client, baca ?id=)
+    application/page.tsx     Detail (server, membungkus ApplicationDetail di Suspense)
     manifest.ts              metadata manifest
     globals.css              token + Tailwind
     fonts/                   Plus Jakarta Sans (lokal)
@@ -163,6 +165,7 @@ Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Versi paket dik
     format.ts
     validation.ts
     server/store.ts
+    server/http.ts
     api-client.ts
   scripts/
     verify-scores.ts
@@ -174,6 +177,7 @@ Tidak ada dependensi UI, chart, tanggal, atau validasi tambahan. Versi paket dik
     unit/
       scoring.test.ts
       extraction.test.ts
+      format.test.ts
     e2e/
       demo-flow.spec.ts
     playwright.config.ts
@@ -284,9 +288,9 @@ API server (dipanggil dari client):
 
 ```ts
 GET    /api/applications                    // list
-POST   /api/applications                    // create → { id }
+POST   /api/applications                    // create Draft → { id }
 GET    /api/applications/:id                // detail + profil/SLIK
-POST   /api/applications/:id/extract        // delay 1.5s → extraction
+POST   /api/applications/:id/extract        // delay 1.5s → extraction + skor + status → { application }
 PATCH  /api/applications/:id/extraction     // simpan koreksi → hitung ulang → application
 POST   /api/applications/:id/decision       // update status, append log
 GET    /api/profiles                        // seed profil untuk form
@@ -344,8 +348,8 @@ scoreApplication(input: ScoreInput): ScoreResult
 5. `score = clamp(520 + sum(points), 0, 1000)`.
 6. Tentukan grade dan rekomendasi sesuai PRD §12.3.
 7. Evaluasi guardrail GR-01 s/d GR-03.
-8. Ambil 5 faktor dengan `|points|` terbesar; urutkan positif lalu negatif.
-9. Susun narasi dari grade, dua faktor dominan, dan rekomendasi.
+8. Ambil 5 faktor dengan `|points|` terbesar; bila nilai absolut sama, faktor positif lebih dulu.
+9. Susun narasi dari skor, grade, faktor positif terbesar, faktor negatif terbesar, dan rekomendasi (§8.4).
 
 Semua nilai bulat untuk skor; DTI dan persentase disimpan sebagai desimal, diformat saat render.
 
@@ -369,9 +373,12 @@ C-05 wajib menghasilkan guardrail GR-01 dan GR-02.
 
 Template:
 
-`Skor {score} (Grade {grade}). {faktorPositif} menaikkan skor (+{poin}), namun {faktorNegatif} menahannya. Rekomendasi: {recommendation}.`
+`Skor {score} (Grade {grade}). {detailPositif} menaikkan skor (+{poin}), namun {detailNegatif} menurunkan skor ({poin}). Rekomendasi: {recommendation}.`
 
-Jika tidak ada faktor negatif, gunakan kalimat positif saja.
+- `detailPositif` dan `detailNegatif` adalah `detail` faktor dengan poin positif terbesar dan poin negatif terbesar dari keenam faktor; huruf pertama kalimat dikapitalkan.
+- Jika hanya ada faktor positif atau hanya faktor negatif, gunakan satu klausa.
+- Untuk grade E kalimat terakhir berbunyi `Rekomendasi reject.`
+- Contoh C-05: `Skor 215 (Grade E). Tidak pernah telat dalam 12 bulan menaikkan skor (+60), namun kolektibilitas terburuk 3 (kurang lancar) menurunkan skor (-200). Rekomendasi reject.`
 
 ---
 
@@ -382,7 +389,7 @@ Jika tidak ada faktor negatif, gunakan kalimat positif saja.
 - Nilai diambil dari profil demo terpilih.
 - Nilai yang dikoreksi analyst menggantikan nilai profil saat skor dihitung ulang: `thp`, `cicilanTerdeteksi`, dan `inflowBulanan`. Data `incomeCv`, kolektibilitas, dan keterlambatan tetap berasal dari profil/SLIK.
 - Nilai efektif: `thpEfektif`, `cicilanEfektif`, dan `inflowEfektif` memakai nilai koreksi bila ada, jika tidak memakai profil. `salaryGapEfektif = abs(thpEfektif − inflowEfektif) / thpEfektif` dan nilai inilah yang masuk ke `scoreApplication`. Field yang dikoreksi diberi `edited: true`. Field ekstraksi lain dapat diedit untuk kelengkapan tampilan, tetapi hanya `thp`, `cicilanTerdeteksi`, dan `inflowBulanan` yang memengaruhi skor.
-- Confidence statis per field (0,78–0,97), ditentukan di seed agar satu field selalu di bawah 0,80 untuk demo koreksi.
+- Confidence statis per field (0,78–0,96), ditetapkan di `lib/extraction.ts` agar satu field selalu di bawah 0,80 untuk demo koreksi.
 - UI menampilkan state loading selama route handler menunda 1.500 ms sebelum mengembalikan hasil.
 - Tidak membaca isi file.
 
@@ -394,11 +401,10 @@ Jika tidak ada faktor negatif, gunakan kalimat positif saja.
 |---|---|---|
 | `/` | Client | Queue + ringkasan + reset |
 | `/new` | Client | Form + upload + ekstraksi |
-| `/application?id=APP-003` | Client | Detail; `useSearchParams` dibungkus `<Suspense>` |
+| `/application?id=APP-003` | Server + client | Halaman server membungkus `ApplicationDetail` (client, `useSearchParams`) di `<Suspense>` |
 
 - ID tidak ditemukan → `EmptyState` dengan tautan kembali ke queue.
 - Navigasi memakai `useRouter` dari `next/navigation`.
-- Static export kompatibel karena ID dibaca dari query string, bukan segmen dinamis.
 
 ---
 
@@ -407,6 +413,9 @@ Jika tidak ada faktor negatif, gunakan kalimat positif saja.
 | Komponen | Tanggung jawab |
 |---|---|
 | `AppHeader` | Judul, label demo, reset, navigasi |
+| `ApplicationDetail` | Memuat aplikasi dari `?id=` dan menyusun bagian detail |
+| `RupiahInput` | Input nominal dengan titik ribuan otomatis dan posisi kursor terjaga |
+| `PwaRegister` | Mendaftarkan service worker pada build produksi |
 | `QueueTable` | Tabel desktop / kartu mobile |
 | `ScoreBadge` | Skor + grade, teks selalu ada |
 | `StatusBadge` | Status aplikasi; `variant` `chip` (mobile) atau `text` (tabel desktop) |
@@ -428,12 +437,14 @@ Komponen interaktif diberi `'use client'`; komponen presentasional tetap murni.
 ## 12. Validasi & Error Handling
 
 - Validasi hanya di batas input: form aplikasi, upload, keputusan.
-- Form: plafon 5–50 juta, tenor ∈ {3,6,12,18,24}, DP 0–50% plafon, profil wajib.
+- Form: plafon 5–50 juta, tenor ∈ {3,6,12,18,24}, DP 0–50% plafon, profil wajib, tujuan opsional maksimal 120 karakter, dokumen berupa daftar `{ type: KTP | SLIP_GAJI | MUTASI, fileName }`.
+- Koreksi (PATCH): minimal satu field, THP lebih dari 0, nominal maksimal Rp 1.000.000.000; ditolak 409 bila ekstraksi belum ada atau aplikasi sudah Approved/Rejected.
+- Ekstraksi hanya untuk status Draft (409 selain itu). Keputusan hanya untuk aplikasi yang sudah diskor (409 untuk Draft).
 - Upload: JPG/PNG/PDF, maks 10 MB; pesan error per slot.
 - Keputusan: reason code wajib; catatan wajib jika guardrail aktif.
 - File JSON server: `try/catch` saat parse; gagal → seed (satu-satunya fallback).
 - API gagal/timeout: tampilkan pesan error di layar, jangan ubah data lokal.
-- Tidak ada retry/telemetry/error boundary kompleks; cukup error state di UI.
+- Penulisan file mengulang rename sementara hingga empat kali (Windows dapat mengunci file sesaat). Selain itu tidak ada retry otomatis, telemetry, atau error boundary kompleks; UI menampilkan error state dengan tombol Coba lagi.
 - Pesan error berbahasa Indonesia, tanpa stack trace.
 
 ---
@@ -452,13 +463,13 @@ Komponen interaktif diberi `'use client'`; komponen presentasional tetap murni.
 --ink-hover: #2c2e31;
 --muted: #5c6066;
 --line: #ececea;
---line-strong: #d9d9d6;
+--line-strong: #8f9194;
 --accent: #0e5b58;
 --accent-soft: #e3efed;
 
 --grade-a: #13743a;
 --grade-b: #3f7d20;
---grade-c: #9a6a00;
+--grade-c: #946600;
 --grade-d: #b4540a;
 --grade-e: #a12622;
 
@@ -514,8 +525,8 @@ Komponen interaktif diberi `'use client'`; komponen presentasional tetap murni.
 - Data sintetis; NIK dan nama fiktif.
 - Tidak ada `dangerouslySetInnerHTML`.
 - Tidak ada secret/API key.
-- File JSON server menyimpan data demo; dihapus lewat Reset Demo.
-- Service worker hanya meng-cache aset statis; response API tidak di-cache.
+- File JSON server menyimpan data demo; Reset Demo mengisi ulang file dari seed.
+- Service worker meng-cache shell (`/`, `/new`, manifest, ikon) dan aset `/_next/static/`; response `/api/*` tidak di-cache.
 
 ---
 
@@ -537,8 +548,8 @@ npm run start      # jalankan hasil build
 ### 17.1 PWA
 
 - `app/manifest.ts` menghasilkan manifest (nama, warna, ikon 192/512, `display: standalone`, `start_url: /`).
-- `public/sw.js` meng-cache aset statis (shell); response `/api/*` tidak di-cache.
-- `components/pwa-register.tsx` mendaftarkan service worker di client setelah mount.
+- `public/sw.js` meng-cache shell (`/`, `/new`, manifest, ikon) dan aset `/_next/static/`; response `/api/*` tidak di-cache.
+- `components/pwa-register.tsx` mendaftarkan service worker di client setelah mount, hanya bila `NODE_ENV === "production"`. PWA dapat di-install dari `npm run build && npm run start`, bukan dari `npm run dev`.
 - Ikon disimpan di `public/icons/`; tanpa library tambahan.
 
 ---
@@ -585,7 +596,7 @@ npm run start      # jalankan hasil build
 | Preview file hilang setelah reload | Nama file tetap tampil; preview hanya selama sesi |
 | Query param butuh Suspense | Bungkus `useSearchParams` di `<Suspense>` |
 | Perbedaan Tailwind v4 vs v3 | Ikuti setup `create-next-app`; jangan campur konfigurasi |
-| PWA tidak dianggap "mobile app" oleh penilai | Catat interpretasi di QA report dan presentasi |
+| PWA tidak dianggap "mobile app" oleh audiens demo | Catat interpretasi di QA report dan presentasi |
 | Browser Playwright gagal diunduh | Unit test tetap berjalan; E2E manual didokumentasikan |
 | Data demo dianggap nyata | Label Demo Mode permanen + data fiktif |
 | Scope melebar | Tidak ada DB/OCR/ML; perubahan scope harus mengubah PRD |

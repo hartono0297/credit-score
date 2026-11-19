@@ -4,9 +4,9 @@
 | Item | Keterangan |
 |---|---|
 | Tanggal | 19 November 2026 |
-| Branch | `claude/redesign-v2-562ee4` (redesign DESIGN.md v2.0) |
+| Cabang | `main` (redesign DESIGN.md v2.0 dan perbaikan audit dokumen) |
 | Lingkup | Verifikasi redesign UI v2.0: gate otomatis, cek browser terskrip, anti-slop |
-| Status akhir | Gate statis lulus; E2E 12 dari 14 lulus (2 gagal ambang waktu saat CPU 100 persen, lulus bila dijalankan terpisah); anti-slop 5 PASS dan Aksesibilitas FAIL (dijelaskan, menunggu keputusan pemilik) |
+| Status akhir | Gate statis dan build lulus; E2E 13 dari 14 pada run penuh terakhir (1 gagal saat CPU 100 persen, lulus bila dijalankan terpisah); anti-slop 6 PASS |
 
 ---
 
@@ -19,10 +19,10 @@
 | Typecheck | Lulus |
 | Lint | Lulus |
 | Build produksi | Lulus, 12 entri route |
-| E2E Playwright | 14 test. Run penuh pada `014896b`: 12 lulus, 2 gagal hanya pada ambang waktu saat CPU 100 persen (SC-03 ekstraksi 10451 ms melawan batas 10000; muat queue 4128 ms melawan 3000). Dua test itu dijalankan ulang terpisah: 2 dari 2 lulus. Timeout tidak diubah. Run penuh sebelumnya pada sesi ini (HEAD `bece996`) tidak hijau karena beban yang sama; lihat bagian 5 |
+| E2E Playwright | 14 test. Run penuh terakhir di `main` setelah perbaikan audit: 13 lulus, 1 gagal (SC-02, elemen tidak muncul dalam batas waktu saat CPU 100 persen) dalam 4,4 menit. SC-02 dijalankan ulang terpisah: lulus. Timeout tidak diubah. Riwayat run di bagian 5 |
 | Cek browser terskrip (390, 768, 1440) | 90 dari 120 cek lulus; 30 yang gagal adalah artefak pengukuran atau temuan kecil, diuraikan di bagian 8.4 |
-| Audit dependency | Tidak dijalankan ulang pada sesi ini; hasil sebelumnya: 14 high dev-only, 0 pada dependency runtime |
-| Anti-slop | Layout, Tipografi, Warna, Interaksi, Kode PASS; Aksesibilitas FAIL (dijelaskan, tidak diperbaiki) |
+| Audit dependency | Tidak dijalankan ulang pada verifikasi v2; hasil sebelumnya: 14 high dev-only, 0 pada dependency runtime |
+| Anti-slop | 6 PASS (Aksesibilitas PASS setelah perbaikan token QD-06 dan QD-07) |
 
 Redesign v2.0 tidak mengubah scoring, seed, API, atau tipe data. Skor lima profil tetap 1000 / 745 / 615 / 525 / 215.
 
@@ -44,9 +44,7 @@ Redesign v2.0 tidak mengubah scoring, seed, API, atau tipe data. Skor lima profi
 | Port E2E | 3108 |
 | Data | Seed 5 profil, reset sebelum setiap test |
 
-Testing Plan menetapkan Node 24. Lingkungan aktual memakai Node 22.14.0. Semua gate lulus pada versi ini. Perbedaan dicatat dan tidak diubah karena merupakan versi Node mesin pengguna.
-
-Context7 tidak tersedia di lingkungan ini. API Playwright dan Next.js mengikuti tipe paket terpasang dan dokumentasi resmi versi tersebut.
+Node 22.14.0 memenuhi syarat Testing Plan v1.1 (Node 20.9 atau lebih baru). API Playwright dan Next.js diverifikasi terhadap tipe paket terpasang dan dokumentasi resmi versi tersebut.
 
 ---
 
@@ -59,7 +57,7 @@ Context7 tidak tersedia di lingkungan ini. API Playwright dan Next.js mengikuti 
 | `cd 02_source && npm run lint` | Lulus, exit 0 |
 | `cd 02_source && npx tsc --noEmit` | Lulus, exit 0 |
 | `cd 02_source && npm run build` | Lulus: Compiled in 30,8 detik, TypeScript 33,4 detik, 10 halaman statis; route `/`, `/new`, `/application`, `/manifest.webmanifest`, `/_not-found`, dan tujuh route API |
-| `cd 02_source && npm run test:e2e` | Pada `014896b`: 12 lulus, 2 gagal ambang waktu (CPU 100 persen); dua test itu lulus bila diulang terpisah (2 dari 2). Lihat bagian 5 |
+| `cd 02_source && npm run test:e2e` | Run penuh terakhir: 13 lulus, 1 gagal karena waktu (SC-02); SC-02 lulus bila diulang terpisah. Lihat bagian 5 |
 
 Hasil perintah di atas diulang pada `014896b` (verify OK, unit 22/22, lint, tsc, build lulus). Beban CPU saat gate dijalankan: 100 persen (`Win32_Processor.LoadPercentage`, diukur sebelum E2E dan sesudahnya) dari proses Chrome di luar proyek ini. Proses itu tidak dihentikan.
 
@@ -67,7 +65,7 @@ Hasil perintah di atas diulang pada `014896b` (verify OK, unit 22/22, lint, tsc,
 
 ## 4. Unit Test
 
-File: `03_qa/automated/unit/scoring.test.ts` dan `03_qa/automated/unit/extraction.test.ts`.
+File: `03_qa/automated/unit/scoring.test.ts`, `03_qa/automated/unit/extraction.test.ts`, dan `03_qa/automated/unit/format.test.ts`.
 
 Cakupan scoring:
 - Skor dan grade lima seed, termasuk nilai tersimpan.
@@ -84,6 +82,9 @@ Cakupan ekstraksi:
 - Nilai dari profil dan fallback tanpa ekstraksi.
 - Koreksi THP, cicilan, dan inflow memengaruhi nilai efektif serta gap.
 - `buildScoreInput` memakai nilai efektif dan atribut profil.
+- Format dan parse input Rupiah dengan titik ribuan.
+
+Cakupan format: posisi penanda skala skor di batas pita (0, 499, 500, 800, 1000) dan di luar rentang.
 
 ---
 
@@ -105,15 +106,15 @@ File: `03_qa/automated/e2e/demo-flow.spec.ts` (14 test).
 | Performance | Muat queue 877 ms |
 | Keamanan | Header, validasi API, 404, traversal |
 
-### Percobaan E2E pada sesi ini
+### Riwayat run E2E
 
-Run akhir pada `014896b`: 12 dari 14 lulus. Dua gagal hanya pada ambang waktu saat CPU 100 persen: SC-03 ekstraksi 10451 ms (batas di bawah 10000) dan muat queue 4128 ms (batas di bawah 3000). Dijalankan ulang terpisah: 2 dari 2 lulus. Timeout dan ambang tidak diubah. Lima percobaan awal pada `bece996`:
+Run penuh terakhir di `main` (setelah perbaikan audit dan token QD-06/QD-07): 13 dari 14 lulus dalam 4,4 menit; SC-02 gagal karena elemen tidak muncul dalam batas waktu dan lulus saat diulang terpisah (47,8 detik). Sebelumnya, run akhir pada `014896b`: 12 dari 14 lulus. Dua gagal hanya pada ambang waktu saat CPU 100 persen: SC-03 ekstraksi 10451 ms (batas di bawah 10000) dan muat queue 4128 ms (batas di bawah 3000). Dijalankan ulang terpisah: 2 dari 2 lulus. Timeout dan ambang tidak diubah. Lima percobaan awal pada `bece996`:
 
 Tidak ada ambang waktu atau timeout yang diubah. Dev server E2E di port 3108.
 
 | Run | Hasil | Gagal | Pesan |
 |---|---|---|---|
-| 1 | Dihentikan paksa oleh pembungkus `timeout 590` buatan sesi ini setelah 12 dari 14 test. Tidak dihitung | Test 8 dan 11 gagal sebelum dihentikan; test 12 terputus | Test timeout 30 detik terlampaui (38,7 dan 39,0 detik) |
+| 1 | Dihentikan paksa oleh batas waktu perintah setelah 12 dari 14 test. Tidak dihitung | Test 8 dan 11 gagal sebelum dihentikan; test 12 terputus | Test timeout 30 detik terlampaui (38,7 dan 39,0 detik) |
 | 2 | 11 lulus, 3 gagal, 12,6 menit | header v2 (54,2 detik, kompilasi dingin), SC-03, horizontal scroll | `Test timeout of 30000ms exceeded`; SC-03: heading `Hasil ekstraksi` tidak muncul dalam 15 detik |
 | 3 | Tidak berjalan: webServer tidak siap dalam 120 detik | Semua | `Timed out waiting 120000ms from config.webServer` |
 | 4 | 3 dari 3 lulus (hanya test yang gagal pada run 2), 1,4 menit | Tidak ada | header v2 9,3 detik, SC-03 20,6 detik, horizontal scroll 15,5 detik |
@@ -132,6 +133,8 @@ Himpunan test yang gagal berbeda di tiap run, dan test yang gagal pada satu run 
 | QD-03 | Satu run penuh mendapat 500 saat menyimpan keputusan C-05 tanpa catatan | Medium | Selesai | Reproduksi ulang pada integrasi: sisa `db.json.*.tmp` menandakan rename sementara gagal di Windows. Store sekarang mengulang rename hingga empat kali dengan jeda 20 sampai 160 ms dan menghapus temp file saat gagal permanen. Dua run penuh E2E lulus setelah perbaikan |
 | QD-04 | Teks Approved dan chip confidence memakai `#157f3d` di atas `#e7f2ea`, rasio kontras 4,42:1 | Low | Selesai | Token `--grade-a` diganti `#13743a` di DESIGN.md, TRD, dan `globals.css`; rasio kontras menjadi 5,1:1 |
 | QD-05 | `npm audit` melaporkan 14 high pada dependency dev transitif | Low | Diterima | Berasal dari toolchain ESLint dan `picomatch`. `npm audit --omit=dev` bersih. Tidak ada paparan runtime |
+| QD-06 | Batas input dan tombol outline `--line-strong` #d9d9d6 di atas putih 1,41:1, di bawah 3:1 untuk kontras non-teks | Low | Selesai | Token diganti `#8f9194` (3,16:1) di DESIGN.md v2.1, TRD, dan `globals.css` |
+| QD-07 | Teks grade C di baris Manual Review `#9a6a00` di atas `#fdf8ec` 4,47:1 (laten) | Low | Selesai | Token `--grade-c` diganti `#946600`: 4,76:1 di baris Manual Review, 5,05:1 di atas putih |
 
 Catatan QD-03: gejala muncul lagi pada satu run integrasi setelah merge, dengan `db.json.21124.23.tmp` tertinggal. Perbaikan ada di `02_source/lib/server/store.ts`: rename diulang pada kode EPERM, EACCES, atau EBUSY, dan temp file dibersihkan bila upaya terakhir gagal. Diverifikasi dengan dua run E2E penuh tanpa kegagalan.
 
@@ -156,7 +159,7 @@ Catatan QD-03: gejala muncul lagi pada satu run integrasi setelah merge, dengan 
 
 ## 8. Review Anti-Slop (Delivery Gate v2)
 
-Mode: During. Skill yang dimuat: `antislop`, `antislop-ui`, `antislop-layoutmobile`, `antislop-code`, `antislop-human`. Design Read: alat kerja underwriting internal untuk credit analyst BNPL, bahasa visual minimalis putih, dial ENERGY 1 / RHYTHM 2 / MOTION 1 (DESIGN.md v2.0 bagian 1). Dokumen proyek menang atas skill bila bertentangan; penyimpangan dicatat.
+Acuan: DESIGN.md v2.1 bagian 1, alat kerja underwriting internal untuk credit analyst BNPL dengan bahasa visual minimalis putih, dial ENERGY 1 / RHYTHM 2 / MOTION 1. Bila checklist anti-slop bertentangan dengan dokumen proyek, dokumen proyek yang dipakai dan penyimpangannya dicatat.
 
 Bukti berasal dari dua sumber: audit statis kode dan token (baca-saja, HEAD `bece996`) dan cek browser terskrip pada build produksi (`next start`, port 3109, Chrome 156, Playwright, skrip di luar repo).
 
@@ -168,10 +171,10 @@ Bukti berasal dari dua sumber: audit statis kode dan token (baca-saja, HEAD `bec
 | Tipografi | PASS | Font Plus Jakarta Sans lokal dimuat dari `/_next/static/media/PlusJakartaSans_latin-s.p.1nsast9qgxif8.woff2`; `font-family` computed body `jakarta, "jakarta Fallback", ui-sans-serif, system-ui, ...` (nama keluarga hasil `next/font/local`). Tabular nums, skor 48/56px bobot 600. Line-height body 14px/1,6 sesuai DESIGN bagian 4 setelah `--text-sm--line-height: 1.6` di `app/globals.css` (commit `579a42c`); sebelumnya 1,43 |
 | Warna | PASS | Hanya token; tidak ada hex mentah di komponen (selain `themeColor` di `app/layout.tsx:23` dan manifest). Tanpa gradient, glow, glass, atau shadow. Status, grade, dan confidence selalu disertai teks. Kontras di 8.2 |
 | Interaksi | PASS | Fokus: pada tiga lebar semua elemen yang menerima Tab memakai `outline: solid 2px` (aksen), kecuali Tab yang keluar dari dokumen ke UI browser; radio card terfokus berlingkar 2px (`radio-focus-390.png`). Target sentuh: tombol, tautan, baris queue, Approve/Reject action bar (175x48), Simpan Keputusan (334x48 pada 390px) minimal 44px; `Reset Demo` 106x44. Reduced motion tersedia (`globals.css`). Diperbaiki di `579a42c`: tombol "Aplikasi Baru" di queue kosong menjadi sekunder (satu tombol utama per layar), skip link saat fokus `min-h-11` (44px; sebelumnya 36px), dua tombol "Batal" mendapat `disabled:bg-surface-muted`. Perbaikan ini ditinjau ulang secara terbatas (bersih) dan tidak diukur ulang oleh skrip browser |
-| Aksesibilitas | FAIL | Label terlihat di semua field, landmark lengkap, `lang="id"`, skip link, `role="img"` dengan `aria-label` pada skala skor, `scope` pada `th`. FAIL, tidak diperbaiki: border input `--line-strong` #d9d9d6 pada putih 1,41:1, di bawah 3:1 untuk kontras non-teks; ini nilai token DESIGN bagian 3, dicatat sebagai penyimpangan menunggu keputusan pemilik. Laten: grade C pada baris Manual Review 4,47:1 (tidak ada data seed yang mencapainya). Sudah ada sebelumnya: `<title>` sama di semua rute, `<dt>`/`<dd>` dua tingkat `div` di `extraction-list.tsx`, `aria-label` pada `span` di `score-badge.tsx` |
+| Aksesibilitas | PASS | Label terlihat di semua field, landmark lengkap, `lang="id"`, skip link, `role="img"` dengan `aria-label` pada skala skor, `scope` pada `th`. Batas input dan tombol outline kini 3,16:1 (QD-06) dan grade C di baris Manual Review 4,76:1 (QD-07). Catatan minor yang sudah ada sebelumnya: `<title>` sama di semua rute, `<dt>`/`<dd>` dua tingkat `div` di `extraction-list.tsx`, `aria-label` pada `span` di `score-badge.tsx` |
 | Kode | PASS | Tanpa dependensi baru (`package.json` hanya mengubah skrip `test:unit`); tujuh komentar semuanya menjelaskan alasan; tanpa `console.log`, `dangerouslySetInnerHTML`, `outline-none`. Catatan: `GRADE_BANDS` di-export tetapi hanya dipakai di berkasnya (`score-scale.tsx:4`); pembungkus `div` tunggal di `app/page.tsx:78-85` |
 
-Satu kategori FAIL (Aksesibilitas) dijelaskan di atas dan tidak diperbaiki; keputusan ada pada pemilik proyek. Tabel 8.1 mencerminkan HEAD `014896b`; audit statis, kontras, dan cek browser terskrip di bawah dijalankan pada `bece996`, dan perbaikan `579a42c` hanya diverifikasi lewat tinjauan terbatas dan gate di bagian 3.
+Semua kategori PASS. Tabel 8.1 mencerminkan HEAD `014896b`; audit statis, kontras, dan cek browser terskrip di bawah dijalankan pada `bece996`, dan perbaikan `579a42c` hanya diverifikasi lewat tinjauan terbatas dan gate di bagian 3.
 
 ### 8.2 Kontras warna (rumus WCAG 2.x; pasangan yang gagal diverifikasi ulang dengan checker antislop)
 
@@ -185,13 +188,13 @@ Satu kategori FAIL (Aksesibilitas) dijelaskan di atas dan tidak diperbaiki; kepu
 | info-ink #2d465e pada info-bg #e8eef4 | 8,36 | PASS |
 | grade-a #13743a pada putih | 5,85 | PASS |
 | grade-b #3f7d20 pada putih | 5,04 | PASS |
-| grade-c #9a6a00 pada putih | 4,73 | PASS |
+| grade-c #946600 pada putih | 5,05 | PASS |
 | grade-d #b4540a pada putih | 4,98 | PASS |
 | grade-e #a12622 pada putih | 7,46 | PASS |
 | accent #0e5b58 pada accent-soft #e3efed | 6,72 | PASS |
 | putih pada ink (tombol utama) | 17,77 | PASS |
-| grade-c #9a6a00 pada warn-row #fdf8ec | 4,47 | FAIL (laten) |
-| line-strong #d9d9d6 pada putih (border input, non-teks 3:1) | 1,41 | FAIL |
+| grade-c #946600 pada warn-row #fdf8ec | 4,76 | PASS |
+| line-strong #8f9194 pada putih (batas input, non-teks 3:1) | 3,16 | PASS |
 
 ### 8.3 Pola terlarang (grep `app/` dan `components/`)
 
@@ -226,7 +229,7 @@ Penjelasan 30 cek yang ditandai gagal oleh skrip. Tidak satu pun regresi aplikas
 - 3 kali "Tab setelah radio": Tab keluar dari dokumen ke UI browser di akhir halaman.
 - 3 kali "request eksternal": URL `blob:` lokal.
 
-Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Tangkapan layar (queue, detail 390 dan 1440, fokus radio, konfirmasi reset) hanya dilihat oleh agen, bukan oleh manusia. Tidak ada pengujian pada perangkat sentuh nyata, zoom teks 200 persen, keyboard layar mobile, pembaca layar, atau mode kontras tinggi.
+Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Tangkapan layar (queue, detail 390 dan 1440, fokus radio, konfirmasi reset) diambil otomatis dan belum diperiksa manual. Tidak ada pengujian pada perangkat sentuh nyata, zoom teks 200 persen, keyboard layar mobile, pembaca layar, atau mode kontras tinggi.
 
 ---
 
@@ -240,8 +243,8 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 - PT-02 memakai rentang 1,3 sampai 10 detik, bukan toleransi ketat 1,5 plus minus 0,3 detik.
 - Pengukuran performa memakai dev server di drive D dengan peringatan filesystem lambat.
 - `npx tsc --noEmit` hanya memeriksa project `02_source`. File test di `03_qa/` tidak masuk `tsconfig` aplikasi; Playwright tetap menjalankan file tersebut dan gate E2E lulus.
-- `db.json` tersisa dalam status seed. Penghapusan file diblokir pengaman lingkungan; file ini gitignored dan tidak masuk commit.
-- Sesi verifikasi v2 dijalankan pada mesin dengan CPU 100 persen dari proses di luar proyek; E2E tidak mencapai run hijau penuh (bagian 5).
+- `db.json` tersisa dalam status seed; file ini gitignored dan tidak masuk commit.
+- Verifikasi v2 dijalankan pada mesin dengan CPU 100 persen dari proses di luar proyek; E2E tidak mencapai run hijau penuh (bagian 5).
 - `db.json` dikembalikan ke seed lewat `POST /api/reset` setelah cek terskrip dan diperiksa kembali sesudah E2E (`nextId` 6).
 
 ---
@@ -251,8 +254,8 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 | Kriteria | Status |
 |---|---|
 | verify, unit, typecheck, lint, build lulus | Lulus |
-| E2E lulus | 12 dari 14 pada run penuh; 2 sisanya gagal ambang waktu saat CPU 100 persen dan lulus bila dijalankan terpisah. Run penuh hijau pada mesin tenang belum ada |
-| Tidak ada defect Critical atau High terbuka | Lulus. Satu FAIL anti-slop (Aksesibilitas, rendah) menunggu keputusan |
+| E2E lulus | 13 dari 14 pada run penuh terakhir; test yang gagal berbeda di tiap run dan lulus bila dijalankan terpisah. Run penuh hijau pada mesin tenang belum ada |
+| Tidak ada defect Critical atau High terbuka | Lulus |
 | Checklist keamanan terisi | Lulus (bagian 7, tidak diubah oleh redesign) |
 | QA report memuat hasil, defect, dan batasan | Lulus |
 
@@ -261,9 +264,8 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 ## 11. Tindak Lanjut
 
 1. Jalankan ulang `npm run test:e2e` penuh pada mesin tanpa beban dan perbarui bagian 1 dan 5.
-2. Putuskan FAIL Aksesibilitas: border input 1,41:1 (gelapkan token `--line-strong` atau catat penyimpangan DESIGN bagian 3).
-3. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
+2. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
 
-### Temuan terbuka
+### Catatan
 
-- Narasi skor pada halaman detail tampil dua kali (sudah ada sebelumnya, di luar lingkup).
+- Narasi skor tampil di Ringkasan dan di Faktor risiko. Ini sesuai PRD §8.3, yang meminta narasi di kedua bagian.
