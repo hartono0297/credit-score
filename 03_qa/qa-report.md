@@ -6,7 +6,7 @@
 | Tanggal | 19 November 2026 |
 | Cabang | `main` (redesign DESIGN.md v2.0 dan perbaikan audit dokumen) |
 | Lingkup | Verifikasi redesign UI v2.0: gate otomatis, cek browser terskrip, anti-slop |
-| Status akhir | Gate statis dan build lulus; E2E 13 dari 14 pada run penuh terakhir (1 gagal saat CPU 100 persen, lulus bila dijalankan terpisah); anti-slop 6 PASS |
+| Status akhir | Gate statis dan build lulus; E2E 14 dari 14 pada run penuh di mesin dengan beban CPU normal; anti-slop 6 PASS |
 
 ---
 
@@ -19,7 +19,7 @@
 | Typecheck | Lulus |
 | Lint | Lulus |
 | Build produksi | Lulus, 12 entri route |
-| E2E Playwright | 14 test. Run penuh terakhir di `main` setelah perbaikan audit: 13 lulus, 1 gagal (SC-02, elemen tidak muncul dalam batas waktu saat CPU 100 persen) dalam 4,4 menit. SC-02 dijalankan ulang terpisah: lulus. Timeout tidak diubah. Riwayat run di bagian 5 |
+| E2E Playwright | 14 lulus, 0 gagal dalam 1,9 menit pada run penuh terakhir di `main` (beban CPU 29 sampai 45 persen). Timeout dan ambang tidak diubah. Riwayat run di bagian 5 |
 | Cek browser terskrip (390, 768, 1440) | 90 dari 120 cek lulus; 30 yang gagal adalah artefak pengukuran atau temuan kecil, diuraikan di bagian 8.4 |
 | Audit dependency | Tidak dijalankan ulang pada verifikasi v2; hasil sebelumnya: 14 high dev-only, 0 pada dependency runtime |
 | Anti-slop | 6 PASS (Aksesibilitas PASS setelah perbaikan token QD-06 dan QD-07) |
@@ -56,10 +56,10 @@ Node 22.14.0 memenuhi syarat Testing Plan v1.1 (Node 20.9 atau lebih baru). API 
 | `cd 02_source && npm run test:unit` | 22 pass, 0 fail |
 | `cd 02_source && npm run lint` | Lulus, exit 0 |
 | `cd 02_source && npx tsc --noEmit` | Lulus, exit 0 |
-| `cd 02_source && npm run build` | Lulus: Compiled in 30,8 detik, TypeScript 33,4 detik, 10 halaman statis; route `/`, `/new`, `/application`, `/manifest.webmanifest`, `/_not-found`, dan tujuh route API |
-| `cd 02_source && npm run test:e2e` | Run penuh terakhir: 13 lulus, 1 gagal karena waktu (SC-02); SC-02 lulus bila diulang terpisah. Lihat bagian 5 |
+| `cd 02_source && npm run build` | Lulus: Compiled in 5,0 detik, TypeScript 6,6 detik, 10 halaman statis; route `/`, `/new`, `/application`, `/manifest.webmanifest`, `/_not-found`, dan tujuh route API |
+| `cd 02_source && npm run test:e2e` | 14 lulus, 0 gagal, 1,9 menit. Lihat bagian 5 |
 
-Hasil perintah di atas diulang pada `014896b` (verify OK, unit 22/22, lint, tsc, build lulus). Beban CPU saat gate dijalankan: 100 persen (`Win32_Processor.LoadPercentage`, diukur sebelum E2E dan sesudahnya) dari proses Chrome di luar proyek ini. Proses itu tidak dihentikan.
+Hasil perintah di atas diulang pada `7f70900` (verify OK, unit 22/22, lint, tsc, build lulus). Beban CPU sebelum gate: 29 sampai 45 persen (`Win32_Processor.LoadPercentage`, tiga sampel). Run sebelumnya pada `014896b` berjalan saat CPU 100 persen; riwayatnya di bagian 5.
 
 ---
 
@@ -108,7 +108,9 @@ File: `03_qa/automated/e2e/demo-flow.spec.ts` (14 test).
 
 ### Riwayat run E2E
 
-Run penuh terakhir di `main` (setelah perbaikan audit dan token QD-06/QD-07): 13 dari 14 lulus dalam 4,4 menit; SC-02 gagal karena elemen tidak muncul dalam batas waktu dan lulus saat diulang terpisah (47,8 detik). Sebelumnya, run akhir pada `014896b`: 12 dari 14 lulus. Dua gagal hanya pada ambang waktu saat CPU 100 persen: SC-03 ekstraksi 10451 ms (batas di bawah 10000) dan muat queue 4128 ms (batas di bawah 3000). Dijalankan ulang terpisah: 2 dari 2 lulus. Timeout dan ambang tidak diubah. Lima percobaan awal pada `bece996`:
+Run penuh terakhir di `main` pada `7f70900` dengan beban CPU 29 sampai 45 persen: 14 dari 14 lulus dalam 1,9 menit (SC-03 14,5 detik, horizontal scroll 11,2 detik, muat queue 2,6 detik). Run ini menutup tindak lanjut run penuh pada mesin tenang.
+
+Run sebelumnya, saat CPU 100 persen: setelah perbaikan audit dan token QD-06/QD-07, 13 dari 14 lulus dalam 4,4 menit; SC-02 gagal karena elemen tidak muncul dalam batas waktu dan lulus saat diulang terpisah (47,8 detik). Sebelumnya, run akhir pada `014896b`: 12 dari 14 lulus. Dua gagal hanya pada ambang waktu saat CPU 100 persen: SC-03 ekstraksi 10451 ms (batas di bawah 10000) dan muat queue 4128 ms (batas di bawah 3000). Dijalankan ulang terpisah: 2 dari 2 lulus. Timeout dan ambang tidak diubah. Lima percobaan awal pada `bece996`:
 
 Tidak ada ambang waktu atau timeout yang diubah. Dev server E2E di port 3108.
 
@@ -120,7 +122,7 @@ Tidak ada ambang waktu atau timeout yang diubah. Dev server E2E di port 3108.
 | 4 | 3 dari 3 lulus (hanya test yang gagal pada run 2), 1,4 menit | Tidak ada | header v2 9,3 detik, SC-03 20,6 detik, horizontal scroll 15,5 detik |
 | 5 | 9 lulus, 5 gagal, 16,9 menit | queue mobile, SC-02, SC-01, SC-03, waktu muat queue | timeout 30 detik; `Keputusan tersimpan.` tidak terlihat dalam 10 detik; heading `Hasil ekstraksi` tidak muncul; waktu muat queue melewati 3000 ms |
 
-Himpunan test yang gagal berbeda di tiap run, dan test yang gagal pada satu run lulus pada run lain atau saat dijalankan terpisah. Waktu tempuh jauh di atas baseline sebelumnya (satu suite 33,1 detik pada v1 melawan 12,6 sampai 16,9 menit). Pola ini konsisten dengan beban CPU mesin, bukan regresi aplikasi, tetapi tidak dibuktikan: tidak ada run penuh pada mesin tenang. Run ulang penuh pada mesin tenang diperlukan sebelum demo.
+Himpunan test yang gagal berbeda di tiap run, dan test yang gagal pada satu run lulus pada run lain atau saat dijalankan terpisah. Waktu tempuh jauh di atas baseline sebelumnya (satu suite 33,1 detik pada v1 melawan 12,6 sampai 16,9 menit). Run penuh pada `7f70900` dengan beban CPU normal lulus 14 dari 14 dalam 1,9 menit tanpa mengubah timeout atau ambang, yang menguatkan bahwa kegagalan sebelumnya berasal dari beban CPU mesin, bukan regresi aplikasi.
 
 ---
 
@@ -244,8 +246,8 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 - Pengukuran performa memakai dev server di drive D dengan peringatan filesystem lambat.
 - `npx tsc --noEmit` hanya memeriksa project `02_source`. File test di `03_qa/` tidak masuk `tsconfig` aplikasi; Playwright tetap menjalankan file tersebut dan gate E2E lulus.
 - `db.json` tersisa dalam status seed; file ini gitignored dan tidak masuk commit.
-- Verifikasi v2 dijalankan pada mesin dengan CPU 100 persen dari proses di luar proyek; E2E tidak mencapai run hijau penuh (bagian 5).
-- `db.json` dikembalikan ke seed lewat `POST /api/reset` setelah cek terskrip dan diperiksa kembali sesudah E2E (`nextId` 6).
+- Sebagian verifikasi v2 dijalankan saat CPU 100 persen dari proses di luar proyek. Run E2E penuh terakhir berjalan pada beban normal dan lulus 14 dari 14 (bagian 5).
+- `db.json` dikembalikan ke seed lewat `POST /api/reset` setelah cek terskrip dan diperiksa kembali sesudah E2E (`nextId` 6, lima aplikasi seed).
 
 ---
 
@@ -254,7 +256,7 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 | Kriteria | Status |
 |---|---|
 | verify, unit, typecheck, lint, build lulus | Lulus |
-| E2E lulus | 13 dari 14 pada run penuh terakhir; test yang gagal berbeda di tiap run dan lulus bila dijalankan terpisah. Run penuh hijau pada mesin tenang belum ada |
+| E2E lulus | Lulus, 14 dari 14 pada run penuh terakhir |
 | Tidak ada defect Critical atau High terbuka | Lulus |
 | Checklist keamanan terisi | Lulus (bagian 7, tidak diubah oleh redesign) |
 | QA report memuat hasil, defect, dan batasan | Lulus |
@@ -263,8 +265,7 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 
 ## 11. Tindak Lanjut
 
-1. Jalankan ulang `npm run test:e2e` penuh pada mesin tanpa beban dan perbarui bagian 1 dan 5.
-2. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
+1. Pertimbangkan upgrade toolchain ESLint untuk menutup temuan audit dev.
 
 ### Catatan
 
