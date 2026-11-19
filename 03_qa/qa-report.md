@@ -266,5 +266,4 @@ Yang TIDAK diperiksa mata manusia: seluruh bagian ini dijalankan lewat skrip. Ta
 
 ### Temuan terbuka
 
-- `04_presentation/presentation.pptx` masih memuat tangkapan layar v1 dan slide 6 menyebut guardrail muncul "di banner"; tidak dibangun ulang pada redesign ini.
 - Narasi skor pada halaman detail tampil dua kali (sudah ada sebelumnya, di luar lingkup).
