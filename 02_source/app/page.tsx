@@ -119,7 +119,7 @@ export default function QueuePage() {
           <EmptyState title="Belum ada aplikasi. Mulai dengan Aplikasi Baru.">
             <Link
               href="/new"
-              className="inline-flex min-h-11 items-center rounded-control bg-ink px-3 text-sm font-semibold text-white hover:bg-ink-hover"
+              className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
             >
               Aplikasi Baru
             </Link>

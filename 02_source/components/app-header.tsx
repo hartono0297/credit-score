@@ -92,7 +92,7 @@ export function AppHeader() {
                   setError(null);
                 }}
                 disabled={resetting}
-                className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted"
+                className="inline-flex min-h-11 items-center rounded-control border border-line-strong bg-surface px-3 text-sm font-semibold text-ink hover:bg-surface-muted disabled:bg-surface-muted disabled:text-muted"
               >
                 Batal
               </button>

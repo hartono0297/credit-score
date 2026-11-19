@@ -149,7 +149,7 @@ function CorrectableRow({
                 setLocalError(null);
               }}
               disabled={saving}
-              className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-muted hover:bg-line disabled:text-muted"
+              className="inline-flex min-h-11 items-center rounded-control px-3 text-sm font-semibold text-muted hover:bg-line disabled:bg-surface-muted disabled:text-muted"
             >
               Batal
             </button>
